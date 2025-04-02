@@ -297,44 +297,68 @@ ul {
 
 .hero-visual {
     flex: 1;
+    min-width: 300px;
+    max-width: 600px;
+}
+
+.tech-dashboard {
+    background-color: var(--secondary);
+    border-radius: 1rem;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+    transform: perspective(1000px) rotateY(-5deg) rotateX(5deg);
+    transition: all 0.3s ease;
+}
+
+.tech-dashboard:hover {
+    transform: perspective(1000px) rotateY(0deg) rotateX(0deg);
 }
 
 /* Data Stream Animation */
 .data-stream {
     height: 200px;
-    background-color: var(--secondary);
-    border-radius: 0.5rem;
+    background-color: rgba(15, 23, 42, 0.95);
+    border-radius: 0.5rem 0.5rem 0 0;
     position: relative;
     overflow: hidden;
-    margin-bottom: 0.5rem;
+    background-image: 
+        linear-gradient(rgba(59, 130, 246, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(59, 130, 246, 0.05) 1px, transparent 1px);
+    background-size: 20px 20px;
 }
 
 .data-line {
     position: absolute;
-    height: 1px;
-    background-color: var(--accent);
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), transparent);
     opacity: 0.5;
-    animation-name: datastream;
-    animation-timing-function: linear;
-    animation-iteration-count: infinite;
+    transform: translateY(-100%);
+    will-change: transform;
+    animation: datastream 3s linear infinite;
 }
 
 @keyframes datastream {
-    0% { transform: translateY(-100%); }
-    100% { transform: translateY(500%); }
+    from { transform: translateY(-100%); }
+    to { transform: translateY(1000%); }
 }
 
 .terminal {
-    background-color: var(--primary);
-    border-radius: 0.5rem;
+    background-color: rgba(15, 23, 42, 0.98);
+    border-radius: 0 0 0.5rem 0.5rem;
     padding: 1rem;
-    font-family: monospace;
+    font-family: 'JetBrains Mono', monospace;
     font-size: 0.9rem;
 }
 
 .terminal-line {
     margin-bottom: 0.5rem;
+    color: var(--text-muted);
 }
+
+.terminal-line.success { color: var(--success); }
+.terminal-line.warning { color: var(--warning); }
+.terminal-line.info { color: var(--info); }
 
 .success {
     color: var(--success);

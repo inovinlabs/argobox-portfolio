@@ -65,22 +65,41 @@ document.addEventListener('DOMContentLoaded', function() {
     const contactForm = document.getElementById('contact-form');
     
     if (contactForm) {
-        contactForm.addEventListener('submit', function(e) {
+        contactForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            // In a real implementation, you would send the form data to a backend service
-            // For now, we'll just simulate a successful submission
+            const submitButton = contactForm.querySelector('button[type="submit"]');
+            const originalButtonText = submitButton.innerHTML;
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+            submitButton.disabled = true;
             
-            const formData = new FormData(contactForm);
-            const formValues = Object.fromEntries(formData.entries());
-            
-            console.log('Form submission:', formValues);
-            
-            // Show success message
-            alert('Thank you for your message! I will get back to you soon.');
-            
-            // Reset form
-            contactForm.reset();
+            try {
+                const formData = new FormData(contactForm);
+                const formValues = Object.fromEntries(formData.entries());
+                
+                const response = await fetch('/contact', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formValues)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    alert('Thank you for your message! I will get back to you soon.');
+                    contactForm.reset();
+                } else {
+                    throw new Error(result.error || 'Failed to send message');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to send message. Please try again or contact me directly via email.');
+            } finally {
+                submitButton.innerHTML = originalButtonText;
+                submitButton.disabled = false;
+            }
         });
     }
     
@@ -93,17 +112,15 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Create animated data streams in the dashboard
     function createDataStreamAnimation() {
-        // Look for either class name that might be in the HTML
-        const dataStreamContainer = document.querySelector('.data-stream') || 
-                                   document.querySelector('.hero-visual .tech-dashboard .data-stream');
+        const dataStreamContainer = document.querySelector('.data-stream');
         
-        console.log('Data stream container found:', !!dataStreamContainer);
-        
-        if (!dataStreamContainer) return;
-        
+        if (!dataStreamContainer) {
+            console.log('Data stream container not found');
+            return;
+        }
+
         // Clear existing lines
-        const existingLines = dataStreamContainer.querySelectorAll('.data-line');
-        existingLines.forEach(line => line.remove());
+        dataStreamContainer.innerHTML = '';
         
         // Create new random lines
         for (let i = 0; i < 10; i++) {
@@ -113,21 +130,25 @@ document.addEventListener('DOMContentLoaded', function() {
             // Random positioning and animation
             const left = Math.random() * 90 + 5; // 5-95%
             const width = Math.random() * 40 + 10; // 10-50%
-            const duration = Math.random() * 3 + 2; // 2-5s
+            const duration = Math.random() * 3 + 2; // 2-5s duration
+            const delay = Math.random() * 2; // 0-2s delay
             
-            line.style.left = `${left}%`;
-            line.style.width = `${width}%`;
-            line.style.animationDuration = `${duration}s`;
+            line.style.cssText = `
+                left: ${left}%;
+                width: ${width}%;
+                animation: datastream ${duration}s linear infinite;
+                animation-delay: -${delay}s;
+                opacity: ${Math.random() * 0.3 + 0.2};
+            `;
             
             dataStreamContainer.appendChild(line);
-            console.log('Added data line:', i);
         }
     }
     
-    // Try to initialize the data stream animation (with retry for race conditions)
-    setTimeout(createDataStreamAnimation, 100);
+    // Initialize the data stream animation immediately
+    createDataStreamAnimation();
     
-    // Refresh data streams periodically
+    // Refresh data streams every 8 seconds
     setInterval(createDataStreamAnimation, 8000);
     
     // Update terminal output with random status messages
