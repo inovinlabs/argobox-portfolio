@@ -1,0 +1,18 @@
+/*
+  Cache-Control: no-cache, no-store, must-revalidate
+  Pragma: no-cache
+  Expires: 0
+
+# Ensure assets like CSS and JS are allowed to be cached but not for too long
+*.css
+  Cache-Control: public, max-age=3600
+*.js
+  Cache-Control: public, max-age=3600
+
+# Allow caching for static resources like images
+/images/*
+  Cache-Control: public, max-age=86400
+
+# Don't cache PDF files to ensure they're always up to date
+*.pdf
+  Cache-Control: no-cache, no-store, must-revalidate 

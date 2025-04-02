@@ -1,0 +1,5 @@
+# Redirect default Netlify subdomain to primary domain
+https://argobox.pages.dev/* https://argobox.com/:splat 301!
+
+# Handle trailing slashes consistently
+/*/ /:splat 301 
