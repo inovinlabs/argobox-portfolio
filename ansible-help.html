@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ansible Sandbox Help | Argobox</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Help guide for using the Ansible Sandbox environment. Learn how to deploy infrastructure as code demonstrations.">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22256%22 height=%22256%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%230f172a%22></rect><path fill=%22%233b82f6%22 d=%22M30 40L50 20L70 40L50 60L30 40Z%22></path><path fill=%22%233b82f6%22 d=%22M50 60L70 40L70 70L50 90L30 70L30 40L50 60Z%22 fill-opacity=%220.6%22></path></svg>">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-bg: #0f172a;
+            --secondary-bg: #1e293b;
+            --accent: #3b82f6;
+            --accent-darker: #2563eb;
+            --accent-gradient: linear-gradient(135deg, #2563eb, #3b82f6);
+            --accent-glow: 0 0 15px rgba(59, 130, 246, 0.5);
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --text-accent: #3b82f6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --info: #0ea5e9;
+            --border: rgba(71, 85, 105, 0.5);
+            --card-bg: rgba(30, 41, 59, 0.8);
+            --card-hover-bg: rgba(30, 41, 59, 0.95);
+            --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            --transition-normal: 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--primary-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+            background-image: 
+                radial-gradient(circle at 20% 35%, rgba(29, 78, 216, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 75% 60%, rgba(14, 165, 233, 0.1) 0%, transparent 50%);
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 5rem 1.5rem;
+        }
+        
+        .help-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+        
+        .help-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .help-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .back-link {
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--accent);
+            font-weight: 500;
+            transition: all var(--transition-normal);
+        }
+        
+        .back-link:hover {
+            color: var(--accent-darker);
+            transform: translateX(-3px);
+        }
+        
+        .help-section {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .help-section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--accent);
+            position: relative;
+            padding-bottom: 0.75rem;
+        }
+        
+        .help-section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--accent-gradient);
+            border-radius: 3px;
+        }
+        
+        .step-grid {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 1.5rem 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .step-number {
+            background: var(--accent-gradient);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .step-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            align-self: center;
+        }
+        
+        .step-content {
+            grid-column: span 2;
+            color: var(--text-secondary);
+        }
+        
+        .step-content p {
+            margin-bottom: 1rem;
+        }
+        
+        .step-content p:last-child {
+            margin-bottom: 0;
+        }
+        
+        .step-image {
+            grid-column: span 2;
+            border-radius: 0.5rem;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+        
+        .step-image img {
+            width: 100%;
+            display: block;
+        }
+        
+        .tip {
+            background-color: rgba(59, 130, 246, 0.1);
+            border-left: 4px solid var(--accent);
+            padding: 1rem;
+            border-radius: 0 0.5rem 0.5rem 0;
+            margin: 1.5rem 0;
+        }
+        
+        .tip-title {
+            font-weight: 600;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .faq-item {
+            margin-bottom: 1.5rem;
+        }
+        
+        .faq-question {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+        
+        .faq-answer {
+            color: var(--text-secondary);
+        }
+        
+        .key-term {
+            font-weight: 500;
+            color: var(--accent);
+        }
+        
+        .help-footer {
+            text-align: center;
+            margin-top: 3rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .help-footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+        
+        .help-footer a:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 768px) {
+            .step-grid {
+                grid-template-columns: 1fr;
+                gap: 0.75rem;
+            }
+            
+            .step-number {
+                margin-bottom: 0.25rem;
+            }
+            
+            .step-title, .step-content, .step-image {
+                grid-column: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="help-header">
+            <a href="ansible-sandbox.html" class="back-link">
+                <i class="fas fa-arrow-left"></i>
+                <span>Back to Sandbox</span>
+            </a>
+            <h1 class="help-title">Ansible Sandbox Help</h1>
+            <p class="help-subtitle">
+                Learn how to use the Ansible Sandbox environment to explore infrastructure automation
+            </p>
+        </div>
+        
+        <div class="help-section">
+            <h2 class="help-section-title">Getting Started</h2>
+            
+            <div class="step-grid">
+                <div class="step-number">1</div>
+                <div class="step-title">Select a Playbook</div>
+                <div class="step-content">
+                    <p>The sandbox offers various Ansible playbooks showcasing different infrastructure automation scenarios. Choose one from the left panel based on your interests.</p>
+                    <p>Each playbook comes with a description and information about its complexity level and typical run time.</p>
+                </div>
+            </div>
+            
+            <div class="step-grid">
+                <div class="step-number">2</div>
+                <div class="step-title">Explore the Playbook Code</div>
+                <div class="step-content">
+                    <p>View the Ansible YAML code to understand how the automation works. The code is syntax-highlighted for readability.</p>
+                    <p>Hover over different sections to see what each part of the playbook does.</p>
+                </div>
+            </div>
+            
+            <div class="step-grid">
+                <div class="step-number">3</div>
+                <div class="step-title">Configure Parameters</div>
+                <div class="step-content">
+                    <p>Switch to the "Configuration" tab to customize various parameters for your deployment. These might include:</p>
+                    <ul style="list-style-type: disc; margin-left: 1.5rem;">
+                        <li>Domain names</li>
+                        <li>Directory paths</li>
+                        <li>Feature toggles</li>
+                        <li>VM template selection</li>
+                        <li>Resource allocation</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="step-grid">
+                <div class="step-number">4</div>
+                <div class="step-title">Deploy the Environment</div>
+                <div class="step-content">
+                    <p>Click the "Deploy" button to launch the automation process. The system will:</p>
+                    <ol style="list-style-type: decimal; margin-left: 1.5rem;">
+                        <li>Create necessary virtual machines</li>
+                        <li>Run the selected Ansible playbook</li>
+                        <li>Configure all services</li>
+                        <li>Provide access to the deployed environment</li>
+                    </ol>
+                </div>
+            </div>
+            
+            <div class="step-grid">
+                <div class="step-number">5</div>
+                <div class="step-title">Monitor Progress</div>
+                <div class="step-content">
+                    <p>Watch the deployment process in real-time on the "Output" tab, which shows the Ansible execution log.</p>
+                    <p>Once deployment completes, you'll see a success message with details on how to access the deployed environment.</p>
+                </div>
+            </div>
+            
+            <div class="step-grid">
+                <div class="step-number">6</div>
+                <div class="step-title">Explore the Environment</div>
+                <div class="step-content">
+                    <p>After deployment, you can:</p>
+                    <ul style="list-style-type: disc; margin-left: 1.5rem;">
+                        <li>View the VM status and details in the "VM Status" tab</li>
+                        <li>Access deployed applications via provided URLs</li>
+                        <li>See resource utilization metrics</li>
+                        <li>Monitor the environment's remaining active time</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="tip">
+                <div class="tip-title">
+                    <i class="fas fa-lightbulb"></i>
+                    <span>Pro Tip</span>
+                </div>
+                <p>
+                    Sandbox environments automatically shut down after 30 minutes to conserve resources. You'll see a countdown timer showing the remaining time. Make sure to complete your exploration before time runs out!
+                </p>
+            </div>
+        </div>
+        
+        <div class="help-section">
+            <h2 class="help-section-title">Frequently Asked Questions</h2>
+            
+            <div class="faq-item">
+                <div class="faq-question">What is an Ansible playbook?</div>
+                <div class="faq-answer">
+                    An Ansible playbook is a YAML file that describes a set of tasks to be executed on remote servers. Playbooks define the desired state of systems and can configure applications, deploy software, and orchestrate advanced IT workflows.
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question">Is the sandbox environment isolated?</div>
+                <div class="faq-answer">
+                    Yes, each sandbox environment is completely isolated. Your deployments and configurations won't affect other users or any production systems. This provides a safe space to experiment with infrastructure automation.
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question">Can I save or download the playbooks?</div>
+                <div class="faq-answer">
+                    Yes, you can copy the playbook code to use in your own environments. Each code segment can be selected and copied to your clipboard. For a more organized approach, visit the Documentation page for downloadable versions of all playbooks.
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question">What happens if I need more time with an environment?</div>
+                <div class="faq-answer">
+                    Currently, all sandbox environments are limited to 30 minutes. If you need more time, you can always redeploy the environment after it expires, which will give you a fresh 30-minute window to continue your exploration.
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question">Can I modify the playbooks?</div>
+                <div class="faq-answer">
+                    The playbook code displayed is read-only to ensure consistent and reliable deployments. However, you can customize many aspects of the deployment through the Configuration tab, which allows you to adjust key parameters without modifying the underlying code.
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question">What if I encounter an error during deployment?</div>
+                <div class="faq-answer">
+                    If an error occurs during deployment, the Output tab will display the specific error message from Ansible. You can use the "Reset" button to clear the environment and try again, potentially with different configuration options.
+                </div>
+            </div>
+        </div>
+        
+        <div class="help-section">
+            <h2 class="help-section-title">Key Terms</h2>
+            
+            <p style="margin-bottom: 1.5rem;">
+                <span class="key-term">Playbook</span> - A YAML file defining a series of Ansible tasks and configurations.
+            </p>
+            
+            <p style="margin-bottom: 1.5rem;">
+                <span class="key-term">Task</span> - An individual action Ansible executes on a managed host, such as installing a package or creating a file.
+            </p>
+            
+            <p style="margin-bottom: 1.5rem;">
+                <span class="key-term">Role</span> - A reusable, self-contained unit of tasks, variables, files, templates, and modules that can be shared across playbooks.
+            </p>
+            
+            <p style="margin-bottom: 1.5rem;">
+                <span class="key-term">Inventory</span> - A list of hosts that Ansible will manage, grouped logically for targeted execution.
+            </p>
+            
+            <p style="margin-bottom: 1.5rem;">
+                <span class="key-term">Handler</span> - A special type of task that only runs when notified by another task that made a change.
+            </p>
+            
+            <p style="margin-bottom: 1.5rem;">
+                <span class="key-term">Variable</span> - A value that can be set and referenced in playbooks, making them more flexible and reusable.
+            </p>
+            
+            <p>
+                <span class="key-term">Template</span> - A text file that uses variables to create dynamic configuration files.
+            </p>
+        </div>
+        
+        <div class="help-footer">
+            <p>Need more detailed information? Check out the <a href="ansible-docs.html">Ansible Sandbox Documentation</a>.</p>
+            <p>For questions about this sandbox, contact me at <a href="mailto:contact@argobox.com">contact@argobox.com</a>.</p>
+        </div>
+    </div>
+</body>
+</html>

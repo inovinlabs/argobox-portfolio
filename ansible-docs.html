@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ansible Sandbox Documentation | Argobox</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Comprehensive documentation for the Ansible Sandbox playbooks. Learn about infrastructure automation, deployment patterns, and best practices.">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22256%22 height=%22256%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%230f172a%22></rect><path fill=%22%233b82f6%22 d=%22M30 40L50 20L70 40L50 60L30 40Z%22></path><path fill=%22%233b82f6%22 d=%22M50 60L70 40L70 70L50 90L30 70L30 40L50 60Z%22 fill-opacity=%220.6%22></path></svg>">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-bg: #0f172a;
+            --secondary-bg: #1e293b;
+            --accent: #3b82f6;
+            --accent-darker: #2563eb;
+            --accent-gradient: linear-gradient(135deg, #2563eb, #3b82f6);
+            --accent-glow: 0 0 15px rgba(59, 130, 246, 0.5);
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --text-accent: #3b82f6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --info: #0ea5e9;
+            --border: rgba(71, 85, 105, 0.5);
+            --card-bg: rgba(30, 41, 59, 0.8);
+            --sidebar-bg: rgba(15, 23, 42, 0.95);
+            --card-hover-bg: rgba(30, 41, 59, 0.95);
+            --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            --transition-normal: 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--primary-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+            background-image: 
+                radial-gradient(circle at 20% 35%, rgba(29, 78, 216, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 75% 60%, rgba(14, 165, 233, 0.1) 0%, transparent 50%);
+        }
+        
+        .docs-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        .sidebar {
+            width: 280px;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--border);
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--border) transparent;
+            padding: 2rem 0;
+            z-index: 10;
+        }
+        
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        .sidebar::-webkit-scrollbar-thumb {
+            background-color: var(--border);
+            border-radius: 3px;
+        }
+        
+        .sidebar-header {
+            padding: 0 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .sidebar-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .back-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--accent);
+            font-weight: 500;
+            font-size: 0.9rem;
+            padding: 0.5rem 0;
+            transition: all var(--transition-normal);
+        }
+        
+        .back-link:hover {
+            color: var(--accent-darker);
+            transform: translateX(-3px);
+        }
+        
+        .sidebar-section {
+            margin-bottom: 1.5rem;
+        }
+        
+        .sidebar-section-title {
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            letter-spacing: 0.05em;
+            padding: 0 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .sidebar-nav {
+            list-style: none;
+        }
+        
+        .sidebar-nav-item {
+            transition: all var(--transition-normal);
+        }
+        
+        .sidebar-nav-link {
+            display: block;
+            padding: 0.5rem 1.5rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all var(--transition-normal);
+            position: relative;
+            font-size: 0.95rem;
+        }
+        
+        .sidebar-nav-link:hover {
+            color: var(--text-primary);
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        
+        .sidebar-nav-link.active {
+            color: var(--accent);
+            background-color: rgba(59, 130, 246, 0.1);
+        }
+        
+        .sidebar-nav-link.active::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 3px;
+            background: var(--accent-gradient);
+        }
+        
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 3rem;
+            max-width: 1000px;
+        }
+        
+        .docs-header {
+            margin-bottom: 3rem;
+        }
+        
+        .docs-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .docs-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+        }
+        
+        .docs-section {
+            margin-bottom: 3rem;
+            scroll-margin-top: 2rem;
+        }
+        
+        .docs-section-title {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+            position: relative;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .docs-subsection {
+            margin-bottom: 2rem;
+        }
+        
+        .docs-subsection-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--accent);
+        }
+        
+        .docs-text {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+        
+        .docs-list {
+            list-style-type: disc;
+            margin-left: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-secondary);
+        }
+        
+        .docs-list li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .docs-code {
+            font-family: 'JetBrains Mono', monospace;
+            background-color: var(--sidebar-bg);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        .docs-code pre {
+            margin: 0;
+        }
+        
+        .docs-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+        }
+        
+        .docs-table th {
+            text-align: left;
+            padding: 0.75rem 1rem;
+            background-color: var(--sidebar-bg);
+            color: var(--text-primary);
+            font-weight: 600;
+            border-bottom: 2px solid var(--border);
+        }
+        
+        .docs-table td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+        
+        .docs-note {
+            background-color: rgba(59, 130, 246, 0.1);
+            border-left: 4px solid var(--accent);
+            padding: 1rem 1.5rem;
+            border-radius: 0 0.5rem 0.5rem 0;
+            margin-bottom: 1.5rem;
+        }
+        
+        .docs-note-title {
+            font-weight: 600;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .docs-warning {
+            background-color: rgba(245, 158, 11, 0.1);
+            border-left: 4px solid var(--warning);
+            padding: 1rem 1.5rem;
+            border-radius: 0 0.5rem 0.5rem 0;
+            margin-bottom: 1.5rem;
+        }
+        
+        .docs-warning-title {
+            font-weight: 600;
+            color: var(--warning);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .docs-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: var(--accent);
+            color: white;
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all var(--transition-normal);
+            margin-bottom: 1.5rem;
+        }
+        
+        .docs-button:hover {
+            background-color: var(--accent-darker);
+            transform: translateY(-2px);
+            box-shadow: var(--card-shadow);
+        }
+        
+        .docs-footer {
+            border-top: 1px solid var(--border);
+            margin-top: 3rem;
+            padding-top: 2rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background: var(--accent-gradient);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: none;
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background: var(--accent-gradient);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+            align-items: center;
+            justify-content: center;
+            z-index: 20;
+            box-shadow: var(--card-shadow);
+        }
+        
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform var(--transition-normal);
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 2rem 1.5rem;
+            }
+            
+            .mobile-menu-toggle {
+                display: flex;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="docs-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1 class="sidebar-title">Ansible Documentation</h1>
+                <a href="ansible-sandbox.html" class="back-link">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Back to Sandbox</span>
+                </a>
+            </div>
+            
+            <div class="sidebar-section">
+                <h2 class="sidebar-section-title">Getting Started</h2>
+                <ul class="sidebar-nav">
+                    <li class="sidebar-nav-item">
+                        <a href="#introduction" class="sidebar-nav-link active">Introduction</a>
+                    </li>
+                    <li class="sidebar-nav-item">
+                        <a href="#sandbox-overview" class="sidebar-nav-link">Sandbox Overview</a>
+                    </li>
+                    <li class="sidebar-nav-item">
+                        <a href="#infrastructure" class="sidebar-nav-link">Infrastructure Design</a>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="sidebar-section">
+                <h2 class="sidebar-section-title">Playbooks</h2>
+                <ul class="sidebar-nav">
+                    <li class="sidebar-nav-item">
+                        <a href="#web-server" class="sidebar-nav-link">Web Server Deployment</a>
+                    </li>
+                    <li class="sidebar-nav-item">
+                        <a href="#docker-compose" class="sidebar-nav-link">Docker Compose Stack</a>
+                    </li>
+                    <li class="sidebar-nav-item">
+                        <a href="#k3s-cluster" class="sidebar-nav-link">K3s Kubernetes Cluster</a>
+                    </li>
+                    <li class="sidebar-nav-item">
+                        <a href="#lamp-stack" class="sidebar-nav-link">LAMP Stack</a>
+                    </li>
+                    <li class="sidebar-nav-item">
+                        <a href="#security-hardening" class="sidebar-nav-link">Security Hardening</a>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="sidebar-section">
+                <h2 class="sidebar-section-title">Advanced Topics</h2>
+                <ul class="sidebar-nav">
+                    <li class="sidebar-nav-item">
+                        <a href="#best-practices" class="sidebar-nav-link">Ansible Best Practices</a>
+                    </li>
+                    <li class="sidebar-nav-item">
+                        <a href="#roles" class="sidebar-nav-link">Working with Roles</a>
+                    </li>
+                    <li class="sidebar-nav-item">
+                        <a href="#variables" class="sidebar-nav-link">Variables & Templates</a>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="sidebar-section">
+                <h2 class="sidebar-section-title">Resources</h2>
+                <ul class="sidebar-nav">
+                    <li class="sidebar-nav-item">
+                        <a href="#downloads" class="sidebar-nav-link">Downloads</a>
+                    </li>
+                    <li class="sidebar-nav-item">
+                        <a href="#references" class="sidebar-nav-link">External References</a>
+                    </li>
+                </ul>
+            </div>
+        </aside>
+        
+        <main class="main-content">
+            <header class="docs-header">
+                <h1 class="docs-title">Ansible Sandbox Documentation</h1>
+                <p class="docs-subtitle">
+                    Comprehensive guide to infrastructure automation with Ansible playbooks
+                </p>
+            </header>
+            
+            <section id="introduction" class="docs-section">
+                <h2 class="docs-section-title">Introduction</h2>
+                
+                <p class="docs-text">
+                    Welcome to the Argobox Ansible Sandbox documentation. This guide provides detailed information about the infrastructure automation playbooks available in the sandbox environment. Whether you're new to Ansible or looking to enhance your infrastructure-as-code skills, this documentation will help you understand the concepts and implementations demonstrated in the sandbox.
+                </p>
+                
+                <div class="docs-subsection">
+                    <h3 class="docs-subsection-title">What is Ansible?</h3>
+                    
+                    <p class="docs-text">
+                        Ansible is an open-source automation tool that simplifies infrastructure management, application deployment, and task automation. It uses a declarative language to describe system configurations and a push-based architecture to apply those configurations to managed nodes.
+                    </p>
+                    
+                    <p class="docs-text">
+                        Key features of Ansible include:
+                    </p>
+                    
+                    <ul class="docs-list">
+                        <li>Agentless architecture - no need to install special software on managed nodes</li>
+                        <li>YAML-based playbooks that are human-readable and version-controllable</li>
+                        <li>Extensive module library for managing virtually any IT system</li>
+                        <li>Idempotent execution - safely run the same playbook multiple times</li>
+                        <li>Built-in parallelism for scaling across large environments</li>
+                        <li>Integration with cloud providers, network devices, and container platforms</li>
+                    </ul>
+                </div>
+                
+                <div class="docs-subsection">
+                    <h3 class="docs-subsection-title">Why Infrastructure as Code?</h3>
+                    
+                    <p class="docs-text">
+                        Infrastructure as Code (IaC) treats infrastructure configuration as software code, allowing you to:
+                    </p>
+                    
+                    <ul class="docs-list">
+                        <li>Version control your infrastructure configurations</li>
+                        <li>Automate deployment and reduce human error</li>
+                        <li>Create consistent, repeatable environments</li>
+                        <li>Enable collaboration among team members</li>
+                        <li>Implement testing and validation for infrastructure changes</li>
+                        <li>Scale infrastructure management efficiently</li>
+                    </ul>
+                    
+                    <p class="docs-text">
+                        The Ansible Sandbox demonstrates these principles by providing real-world examples of infrastructure deployments that you can examine and execute in a safe, isolated environment.
+                    </p>
+                </div>
+            </section>
+            
+            <section id="sandbox-overview" class="docs-section">
+                <h2 class="docs-section-title">Sandbox Overview</h2>
+                
+                <p class="docs-text">
+                    The Ansible Sandbox is a controlled environment that allows you to explore infrastructure automation without affecting production systems. Each sandbox deployment creates isolated virtual machines to safely execute Ansible playbooks.
+                </p>
+                
+                <div class="docs-subsection">
+                    <h3 class="docs-subsection-title">Sandbox Architecture</h3>
+                    
+                    <p class="docs-text">
+                        The sandbox uses a combination of technologies to provide a realistic yet isolated environment:
+                    </p>
+                    
+                    <ul class="docs-list">
+                        <li><strong>Proxmox Virtualization:</strong> Backend hypervisor for creating lightweight VMs</li>
+                        <li><strong>Isolated Network:</strong> Private network segments for each sandbox deployment</li>
+                        <li><strong>Ansible Control Node:</strong> Preconfigured with necessary collections and modules</li>
+                        <li><strong>Ephemeral Storage:</strong> Non-persistent storage that resets between sessions</li>
+                        <li><strong>Resource Limits:</strong> CPU, memory, and time boundaries to ensure fair usage</li>
+                    </ul>
+                </div>
+                
+                <div class="docs-subsection">
+                    <h3 class="docs-subsection-title">Available Playbooks</h3>
+                    
+                    <p class="docs-text">
+                        The sandbox includes several playbooks of varying complexity:
+                    </p>
+                    
+                    <table class="docs-table">
+                        <thead>
+                            <tr>
+                                <th>Playbook</th>
+                                <th>Complexity</th>
+                                <th>VMs</th>
+                                <th>Est. Runtime</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Web Server Deployment</td>
+                                <td>Basic</td>
+                                <td>1</td>
+                                <td>~3 min</td>
+                            </tr>
+                            <tr>
+                                <td>Docker Compose Stack</td>
+                                <td>Intermediate</td>
+                                <td>1</td>
+                                <td>~5 min</td>
+                            </tr>
+                            <tr>
+                                <td>K3s Kubernetes Cluster</td>
+                                <td>Advanced</td>
+                                <td>3</td>
+                                <td>~8 min</td>
+                            </tr>
+                            <tr>
+                                <td>LAMP Stack</td>
+                                <td>Intermediate</td>
+                                <td>1</td>
+                                <td>~4 min</td>
+                            </tr>
+                            <tr>
+                                <td>Security Hardening</td>
+                                <td>Advanced</td>
+                                <td>1</td>
+                                <td>~6 min</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <p class="docs-text">
+                        Each playbook demonstrates different aspects of infrastructure automation, from basic web server setup to more complex multi-node deployments.
+                    </p>
+                </div>
+                
+                <div class="docs-subsection">
+                    <h3 class="docs-subsection-title">Sandbox Limitations</h3>
+                    
+                    <div class="docs-warning">
+                        <div class="docs-warning-title">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span>Important Constraints</span>
+                        </div>
+                        <p>
+                            The sandbox environment has the following limitations:
+                        </p>
+                        <ul style="margin-top: 0.5rem; margin-left: 1.5rem;">
+                            <li>30-minute time limit per session</li>
+                            <li>Limited outbound internet access</li>
+                            <li>Maximum of 3 VMs per deployment</li>
+                            <li>No persistent storage between sessions</li>
+                            <li>Resource caps (4 vCPU, 4GB RAM per deployment)</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="infrastructure" class="docs-section">
+                <h2 class="docs-section-title">Infrastructure Design</h2>
+                
+                <p class="docs-text">
+                    The sandbox uses a modular infrastructure design to isolate each deployment while providing a realistic environment for Ansible automation.
+                </p>
+                
+                <div class="docs-subsection">
+                    <h3 class="docs-subsection-title">VM Templates</h3>
+                    
+                    <p class="docs-text">
+                        All sandbox playbooks use lightweight VM templates that boot quickly and consume minimal resources:
+                    </p>
+                    
+                    <ul class="docs-list">
+                        <li><strong>Ubuntu 22.04 LTS:</strong> Modern, long-term support Linux distribution</li>
+                        <li><strong>Debian 11:</strong> Stable, minimal distribution ideal for server deployments</li>
+                        <li><strong>CentOS Stream 9:</strong> Enterprise-focused distribution for RHEL compatibility</li>
+                    </ul>
+                    
+                    <p class="docs-text">
+                        These templates are pre-optimized with:
+                    </p>
+                    
+                    <ul class="docs-list">
+                        <li>Cloud-init support for dynamic provisioning</li>
+                        <li>Python 3 pre-installed for Ansible compatibility</li>
+                        <li>Minimal package set for faster deployment</li>
+                        <li>SSH key-based authentication</li>
+                    </ul>
+                </div>
+                
+                <div class="docs-subsection">
+                    <h3 class="docs-subsection-title">Network Architecture</h3>
+                    
+                    <p class="docs-text">
+                        Each sandbox deployment gets a dedicated private network segment with the following characteristics:
+                    </p>
+                    
+                    <ul class="docs-list">
+                        <li>Private 192.168.122.0/24 subnet</li>
+                        <li>Isolated from other sandbox deployments</li>
+                        <li>NAT for limited outbound connectivity</li>
+                        <li>DNS resolution for package installations</li>
+                        <li>No inbound external access</li>
+                    </ul>
+                    
+                    <div class="docs-note">
+                        <div class="docs-note-title">
+                            <i class="fas fa-info-circle"></i>
+                            <span>Network Access</span>
+                        </div>
+                        <p>
+                            While your deployed services won't be accessible from the public internet, you'll be able to interact with them through the sandbox interface, which provides proxied access to web applications and services deployed in your environment.
+                        </p>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="web-server" class="docs-section">
+                <h2 class="docs-section-title">Web Server Deployment Playbook</h2>
+                
+                <p class="docs-text">
+                    The Web Server Deployment playbook demonstrates how to automate the installation and configuration of an Nginx web server with a custom website.
+                </p>
+                
+                <div class="docs-subsection">
+                    <h3 class="docs-subsection-title">Playbook Overview</h3>
+                    
+                    <p class="docs-text">
+                        This basic playbook covers:
+                    </p>
+                    
+                    <ul class="docs-list">
+                        <li>Package installation and management</li>
+                        <li>Service configuration and startup</li>
+                        <li>File and directory management</li>
+                        <li>Template-based configuration</li>
+                        <li>Handlers for service restarts</li>
+                    </ul>
+                    
+                    <p class="docs-text">
+                        The playbook deploys a simple but fully functional web server with a customizable theme and domain configuration.
+                    </p>
+                </div>
+                
+                <div class="docs-subsection">
+                    <h3 class="docs-subsection-title">Code Structure</h3>
+                    
+                    <p class="docs-text">
+                        The playbook consists of three main components:
+                    </p>
+                    
+                    <ol class="docs-list">
+                        <li><strong>Main Playbook:</strong> web-server.yml - Defines tasks for installation and configuration</li>
+                        <li><strong>Website Template:</strong> templates/index.html.j2 - Jinja2 template for the sample website</li>
+                        <li><strong>Nginx Config Template:</strong> templates/nginx.conf.j2 - Virtual host configuration</li>
+                    </ol>
+                    
+                    <div class="docs-code">
+                        <pre>
+# Directory structure
+web-server/
+├── web-server.yml
+└── templates/
+    ├── index.html.j2
+    └── nginx.conf.j2</pre>
+                    </div>
+                </div>
+                
+                <div class="docs-subsection">
+                    <h3 class="docs-subsection-title">Key Variables</h3>
+                    
+                    <p class="docs-text">
+                        The playbook uses several configurable variables:
+                    </p>
+                    
+                    <table class="docs-table">
+                        <thead>
+                            <tr>
+                                <th>Variable</th>
+                                <th>Default</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>web_domain</td>
+                                <td>example.local</td>
+                                <td>Domain name for the Nginx virtual host</td>
+                            </tr>
+                            <tr>
+                                <td>web_root</td>
+                                <td>/var/www/html</td>
+                                <td>Directory path for website files</td>
+                            </tr>
+                            <tr>
+                                <td>enable_https</td>
+                                <td>false</td>
+                                <td>Whether to configure SSL/TLS</td>
+                            </tr>
+                            <tr>
+                                <td>web_color</td>
+                                <td>blue</td>
+                                <td>Theme color for the sample website</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="docs-subsection">
+                    <h3 class="docs-subsection-title">Implementation Details</h3>
+                    
+                    <p class="docs-text">
+                        The playbook follows these steps:
+                    </p>
+                    
+                    <ol class="docs-list">
+                        <li>Updates the package repository cache</li>
+                        <li>Installs Nginx and required packages</li>
+                        <li>Creates the web root directory</li>
+                        <li>Deploys a sample website using a Jinja2 template</li>
+                        <li>Configures the Nginx virtual host</li>
+                        <li>Enables the site configuration</li>
+                        <li>Starts and enables the Nginx service</li>
+                    </ol>
+                    
+                    <p class="docs-text">
+                        The playbook also includes a handler for restarting Nginx when configuration changes are made, demonstrating the handler notification pattern in Ansible.
+                    </p>
+                </div>
+                
+                <a href="#" class="docs-button" onclick="alert('In a real implementation, this would download the playbook files.')">
+                    <i class="fas fa-download"></i>
+                    <span>Download Web Server Playbook</span>
+                </a>
+            </section>
+            
+            <!-- Additional playbook sections would follow the same pattern -->
+            
+            <section id="best-practices" class="docs-section">
+                <h2 class="docs-section-title">Ansible Best Practices</h2>
+                
+                <p class="docs-text">
+                    The sandbox playbooks demonstrate several Ansible best practices that you can apply to your own automation projects.
+                </p>
+                
+                <div class="docs-subsection">
+                    <h3 class="docs-subsection-title">Organization</h3>
+                    
+                    <ul class="docs-list">
+                        <li><strong>Modular Design:</strong> Breaking complex deployments into discrete tasks</li>
+                        <li><strong>Clear Naming:</strong> Using descriptive names for tasks, variables, and files</li>
+                        <li><strong>Consistent Structure:</strong> Following a standard directory layout for playbooks and roles</li>
+                        <li><strong>Separation of Concerns:</strong> Keeping variables, tasks, and templates properly organized</li>
+                    </ul>
+                </div>
+                
+                <div class="docs-subsection">
+                    <h3 class="docs-subsection-title">Code Quality</h3>
+                    
+                    <ul class="docs-list">
+                        <li><strong>Idempotence:</strong> Ensuring tasks can run multiple times without negative effects</li>
+                        <li><strong>Error Handling:</strong> Including proper failure conditions and recovery options</li>
+                        <li><strong>Validation:</strong> Checking inputs and preconditions before making changes</li>
+                        <li><strong>Documentation:</strong> Adding clear comments and documentation within playbooks</li>
+                    </ul>
+                </div>
+                
+                <div class="docs-subsection">
+                    <h3 class="docs-subsection-title">Security Considerations</h3>
+                    
+                    <ul class="docs-list">
+                        <li><strong>Least Privilege:</strong> Using minimal permissions necessary for tasks</li>
+                        <li><strong>Secret Management:</strong> Properly handling sensitive data</li>
+                        <li><strong>Secure Defaults:</strong> Starting with secure configuration baselines</li>
+                        <li><strong>Hardening:</strong> Including security enhancements as part of deployment</li>
+                    </ul>
+                </div>
+            </section>
+            
+            <footer class="docs-footer">
+                <p>
+                    For questions or suggestions about the Ansible Sandbox, please contact <a href="mailto:contact@argobox.com">contact@argobox.com</a>.
+                </p>
+                <p>
+                    &copy; <span id="current-year">2025</span> Argobox.com. All rights reserved.
+                </p>
+            </footer>
+        </main>
+    </div>
+    
+    <button class="mobile-menu-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Current year
+            document.getElementById('current-year').textContent = new Date().getFullYear();
+            
+            // Mobile menu toggle
+            const menuToggle = document.querySelector('.mobile-menu-toggle');
+            const sidebar = document.querySelector('.sidebar');
+            
+            menuToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('active');
+                
+                // Change icon based on sidebar state
+                const icon = this.querySelector('i');
+                if (sidebar.classList.contains('active')) {
+                    icon.classList.remove('fa-bars');
+                    icon.classList.add('fa-times');
+                } else {
+                    icon.classList.remove('fa-times');
+                    icon.classList.add('fa-bars');
+                }
+            });
+            
+            // Active link highlighting
+            const navLinks = document.querySelectorAll('.sidebar-nav-link');
+            
+            function setActiveLink() {
+                const sections = document.querySelectorAll('.docs-section');
+                let currentSection = '';
+                
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    const sectionHeight = section.offsetHeight;
+                    
+                    if (window.scrollY >= sectionTop - 100 && window.scrollY < sectionTop + sectionHeight - 100) {
+                        currentSection = section.getAttribute('id');
+                    }
+                });
+                
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    const href = link.getAttribute('href').replace('#', '');
+                    
+                    if (href === currentSection) {
+                        link.classList.add('active');
+                    }
+                });
+            }
+            
+            window.addEventListener('scroll', setActiveLink);
+            setActiveLink();
+            
+            // Smooth scrolling for anchor links
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    // Close mobile menu when a link is clicked
+                    if (window.innerWidth < 992) {
+                        sidebar.classList.remove('active');
+                        const icon = menuToggle.querySelector('i');
+                        icon.classList.remove('fa-times');
+                        icon.classList.add('fa-bars');
+                    }
+                    
+                    // Don't use smooth scroll if user prefers reduced motion
+                    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+                    
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href').substring(1);
+                    const targetElement = document.getElementById(targetId);
+                    
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 20,
+                            behavior: 'smooth'
+                        });
+                        
+                        // Update URL without smooth scrolling
+                        history.pushState(null, null, `#${targetId}`);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
