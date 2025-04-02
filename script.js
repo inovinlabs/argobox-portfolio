@@ -5,21 +5,24 @@
 
 document.addEventListener('DOMContentLoaded', function() {
     // Update current year in footer
-    document.getElementById('current-year').textContent = new Date().getFullYear();
+    const yearElement = document.getElementById('current-year');
+    if (yearElement) {
+        yearElement.textContent = new Date().getFullYear();
+    }
     
     // Mobile menu toggle
-    const menuToggle = document.querySelector('.menu-toggle');
-    const navMenu = document.querySelector('.nav-menu');
+    const menuToggle = document.querySelector('.mobile-menu-btn');
+    const navLinks = document.querySelector('.nav-links');
     
-    if (menuToggle && navMenu) {
+    if (menuToggle && navLinks) {
         menuToggle.addEventListener('click', function() {
-            navMenu.classList.toggle('active');
+            navLinks.classList.toggle('active');
         });
     }
     
-    // Active navigation link based on scroll position
+    // Set active navigation links based on scroll position
     const sections = document.querySelectorAll('section');
-    const navLinks = document.querySelectorAll('.nav-link');
+    const navItems = document.querySelectorAll('.nav-link');
     
     function updateActiveLink() {
         let currentSection = '';
@@ -33,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        navLinks.forEach(link => {
+        navItems.forEach(link => {
             link.classList.remove('active');
             if (link.getAttribute('href') === `#${currentSection}`) {
                 link.classList.add('active');
@@ -43,6 +46,20 @@ document.addEventListener('DOMContentLoaded', function() {
     
     window.addEventListener('scroll', updateActiveLink);
     updateActiveLink();
+    
+    // Handle navbar style change on scroll
+    const navbar = document.querySelector('.navbar');
+    
+    function updateNavbarStyle() {
+        if (window.scrollY > 50) {
+            navbar?.classList.add('scrolled');
+        } else {
+            navbar?.classList.remove('scrolled');
+        }
+    }
+    
+    window.addEventListener('scroll', updateNavbarStyle);
+    updateNavbarStyle();
     
     // Form submission handling
     const contactForm = document.getElementById('contact-form');
@@ -59,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             console.log('Form submission:', formValues);
             
-            // Show success message (in a real implementation)
+            // Show success message
             alert('Thank you for your message! I will get back to you soon.');
             
             // Reset form
@@ -67,13 +84,24 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Create animated data streams
-    function createRandomDataLines() {
-        const dataStreamContainer = document.querySelector('.data-stream');
+    // Initialize and animate the hero terminal
+    const typingElement = document.querySelector('.typing-effect');
+    if (typingElement) {
+        // The animation is handled by CSS, nothing to do here
+        console.log('Terminal typing animation initialized');
+    }
+    
+    // Create animated data streams in the dashboard
+    function createDataStreamAnimation() {
+        // Look for either class name that might be in the HTML
+        const dataStreamContainer = document.querySelector('.data-stream') || 
+                                   document.querySelector('.hero-visual .tech-dashboard .data-stream');
+        
+        console.log('Data stream container found:', !!dataStreamContainer);
         
         if (!dataStreamContainer) return;
         
-        // Remove existing lines
+        // Clear existing lines
         const existingLines = dataStreamContainer.querySelectorAll('.data-line');
         existingLines.forEach(line => line.remove());
         
@@ -92,57 +120,103 @@ document.addEventListener('DOMContentLoaded', function() {
             line.style.animationDuration = `${duration}s`;
             
             dataStreamContainer.appendChild(line);
+            console.log('Added data line:', i);
         }
     }
     
-    // Initial data lines creation
-    createRandomDataLines();
+    // Try to initialize the data stream animation (with retry for race conditions)
+    setTimeout(createDataStreamAnimation, 100);
     
-    // Refresh data lines periodically
-    setInterval(createRandomDataLines, 10000);
+    // Refresh data streams periodically
+    setInterval(createDataStreamAnimation, 8000);
+    
+    // Update terminal output with random status messages
+    function updateTerminalOutput() {
+        const terminalOutput = document.querySelector('.terminal-output');
+        if (!terminalOutput) return;
+        
+        const statusMessages = [
+            { text: 'All systems operational', type: '' },
+            { text: 'Backup completed successfully', type: 'terminal-success' },
+            { text: 'Security scan in progress', type: 'terminal-info' },
+            { text: 'New updates available', type: 'terminal-warning' },
+            { text: 'Optimizing database performance', type: 'terminal-info' }
+        ];
+        
+        // Randomly update one of the lines
+        const lineIndex = Math.floor(Math.random() * 2) + 4; // Only update the last few lines
+        const lineToUpdate = terminalOutput.children[lineIndex];
+        
+        if (lineToUpdate) {
+            const randomMessage = statusMessages[Math.floor(Math.random() * statusMessages.length)];
+            lineToUpdate.textContent = `> ${randomMessage.text}`;
+            lineToUpdate.className = 'terminal-line';
+            if (randomMessage.type) {
+                lineToUpdate.classList.add(randomMessage.type);
+            }
+        }
+    }
+    
+    // Periodically update the terminal with new messages
+    setInterval(updateTerminalOutput, 5000);
     
     // Simulated live metrics - randomly update values periodically
     function updateMetrics() {
-        const cpuValue = document.querySelector('.metric:nth-child(1) .metric-value');
-        const cpuBar = document.querySelector('.metric:nth-child(1) .metric-progress');
-        
-        const memValue = document.querySelector('.metric:nth-child(2) .metric-value');
-        const memBar = document.querySelector('.metric:nth-child(2) .metric-progress');
-        
-        const storageValue = document.querySelector('.metric:nth-child(3) .metric-value');
-        const storageBar = document.querySelector('.metric:nth-child(3) .metric-progress');
-        
-        const networkValue = document.querySelector('.metric:nth-child(4) .metric-value');
-        const networkBar = document.querySelector('.metric:nth-child(4) .metric-progress');
-        
-        if (cpuValue && cpuBar) {
-            const newCpuValue = Math.floor(Math.random() * 30) + 20; // 20-50%
-            cpuValue.textContent = `${newCpuValue}%`;
-            cpuBar.style.width = `${newCpuValue}%`;
+        function updateMetricIfExists(selector, minValue, maxValue) {
+            const valueElement = document.querySelector(selector + ' .metric-value') || 
+                                document.querySelector(selector + ' .metric-header .metric-value');
+                                
+            const barElement = document.querySelector(selector + ' .metric-progress');
+            
+            if (valueElement && barElement) {
+                const newValue = Math.floor(Math.random() * (maxValue - minValue)) + minValue;
+                valueElement.textContent = `${newValue}%`;
+                barElement.style.width = `${newValue}%`;
+                return true;
+            }
+            return false;
         }
         
-        if (memValue && memBar) {
-            const newMemValue = Math.floor(Math.random() * 20) + 45; // 45-65%
-            memValue.textContent = `${newMemValue}%`;
-            memBar.style.width = `${newMemValue}%`;
+        // Try different selectors to find the metrics
+        // First attempt with nth-child
+        let found = updateMetricIfExists('.metric:nth-child(1)', 20, 50);
+        if (!found) {
+            // Alternative approach - try by unique class or attribute
+            updateMetricIfExists('[data-metric="cpu"]', 20, 50);
         }
         
-        if (storageValue && storageBar) {
-            const newStorageValue = Math.floor(Math.random() * 5) + 60; // 60-65%
-            storageValue.textContent = `${newStorageValue}%`;
-            storageBar.style.width = `${newStorageValue}%`;
-        }
+        updateMetricIfExists('.metric:nth-child(2)', 45, 65) || 
+        updateMetricIfExists('[data-metric="memory"]', 45, 65);
         
-        if (networkValue && networkBar) {
-            const newNetworkValue = Math.floor(Math.random() * 30) + 15; // 15-45%
-            networkValue.textContent = `${newNetworkValue}%`;
-            networkBar.style.width = `${newNetworkValue}%`;
-        }
+        updateMetricIfExists('.metric:nth-child(3)', 60, 65) || 
+        updateMetricIfExists('[data-metric="storage"]', 60, 65);
+        
+        updateMetricIfExists('.metric:nth-child(4)', 15, 45) || 
+        updateMetricIfExists('[data-metric="network"]', 15, 45);
     }
     
     // Update metrics every 5 seconds
     setInterval(updateMetrics, 5000);
     
     // Trigger an initial metrics update
-    updateMetrics();
+    setTimeout(updateMetrics, 500);
+    
+    // Debug info - help determine if there are any issues
+    console.log('Script loaded successfully');
+    console.log('Sections found:', sections.length);
+    console.log('Nav links found:', navItems.length);
+    
+    // Check if dashboard elements exist
+    console.log('Data stream container exists:', 
+        !!document.querySelector('.data-stream') || 
+        !!document.querySelector('.tech-dashboard .data-stream'));
+    
+    console.log('Metrics containers exist:', 
+        !!document.querySelector('.metric'));
+    
+    // Add some diagnostic info in case we're having issues
+    if (!document.querySelector('.data-stream') && 
+        !document.querySelector('.tech-dashboard .data-stream')) {
+        console.warn('Data stream container not found - visualizations may not appear');
+    }
 });

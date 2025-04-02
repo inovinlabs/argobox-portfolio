@@ -4,939 +4,544 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daniel LaForce | Infrastructure & Systems Engineer</title>
-    
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="Expert Systems & Infrastructure Engineer specializing in virtualization, containerization, and secure network architecture. Explore my live homelab, tech projects, and services.">
-    <meta name="keywords" content="systems engineer, infrastructure, virtualization, kubernetes, docker, network security, cloud migration, DevOps">
-    <meta name="author" content="Daniel LaForce">
-    
-    <!-- Open Graph / Social Media Meta Tags -->
-    <meta property="og:title" content="Daniel LaForce | Systems & Infrastructure Engineer">
-    <meta property="og:description" content="Infrastructure specialist with expertise in virtualization, containerization, and network security. View my live lab dashboard and projects.">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://argobox.com">
+    <meta name="description" content="Expert in systems administration, network engineering, and infrastructure solutions. Specializing in virtualization, containerization, and secure cloud migrations.">
+    <meta name="keywords" content="system administrator, network engineer, infrastructure, virtualization, kubernetes, docker, cloud migration">
     
     <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22256%22 height=%22256%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%230f172a%22></rect><path fill=%22%233b82f6%22 d=%22M30 40L50 20L70 40L50 60L30 40Z%22></path><path fill=%22%233b82f6%22 d=%22M50 60L70 40L70 70L50 90L30 70L30 40L50 60Z%22 fill-opacity=%220.6%22></path></svg>">
+    <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="styles.css">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">
+                <span class="logo-text">Argobox</span>
+                <span class="logo-dot">.com</span>
+            </div>
+            <div class="nav-menu">
+                <a href="#home" class="nav-link active">Home</a>
+                <a href="#services" class="nav-link">Services</a>
+                <a href="#lab" class="nav-link">Live Lab</a>
+                <a href="#projects" class="nav-link">Projects</a>
+                <a href="#experience" class="nav-link">Experience</a>
+                <a href="#contact" class="nav-link">Contact</a>
+            </div>
+            <div class="nav-buttons">
+                <a href="https://dashboard.argobox.com" class="dashboard-link">
+                    <span class="live-indicator"></span>
+                    <span>Live Dashboard</span>
+                </a>
+                <button class="menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    <span class="highlight">Infrastructure</span> &amp; <span class="highlight">Systems</span> Architect
+                </h1>
+                <div class="status-indicator">
+                    <div class="live-indicator"></div>
+                    <span>Lab Status: Online</span>
+                </div>
+                <p class="hero-description">
+                    I build resilient infrastructure and automation solutions — from virtualization and containerization to secure network architecture and cloud migration.
+                </p>
+                <div class="command-line">
+                    <span class="typing-animation">> Ready for deployment...</span>
+                </div>
+                <div class="hero-buttons">
+                    <a href="#contact" class="btn btn-primary">Hire Me</a>
+                    <a href="#lab" class="btn btn-outline">Explore My Lab</a>
+                    <a href="resume.pdf" class="btn btn-outline" target="_blank">View Resume</a>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="data-stream">
+                    <div class="data-line" style="left: 10%; width: 80%; animation-duration: 3s;"></div>
+                    <div class="data-line" style="left: 15%; width: 60%; animation-duration: 4s;"></div>
+                    <div class="data-line" style="left: 25%; width: 30%; animation-duration: 2.5s;"></div>
+                    <div class="data-line" style="left: 40%; width: 50%; animation-duration: 3.5s;"></div>
+                    <div class="data-line" style="left: 55%; width: 35%; animation-duration: 4.5s;"></div>
+                    <div class="data-line" style="left: 70%; width: 25%; animation-duration: 2s;"></div>
+                    <div class="data-line" style="left: 85%; width: 10%; animation-duration: 3.8s;"></div>
+                </div>
+                <div class="terminal">
+                    <div class="terminal-line"> > Monitoring infrastructure... </div>
+                    <div class="terminal-line success"> > CPU load: Normal </div>
+                    <div class="terminal-line success"> > RAM usage: 42% </div>
+                    <div class="terminal-line success"> > Network: Stable </div>
+                    <div class="terminal-line info"> > Containers: 16 running </div>
+                    <div class="terminal-line warning"> > Backing up critical data... </div>
+                    <div class="terminal-line"> > Status: All systems operational </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="services">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Expert Services</h2>
+                <p class="section-description">
+                    Comprehensive IT solutions tailored to your business needs, from network infrastructure to cloud migration.
+                </p>
+            </div>
+            
+            <div class="services-grid">
+                <!-- System Administration -->
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-server"></i>
+                    </div>
+                    <h3 class="service-title">System Administration</h3>
+                    <p class="service-description">
+                        Expert management of Windows & Linux servers, virtualization, and cloud infrastructure. Ensuring your systems remain secure, optimized and reliable.
+                    </p>
+                    <div class="tech-badges">
+                        <span class="tech-badge">Windows Server</span>
+                        <span class="tech-badge">Linux</span>
+                        <span class="tech-badge">VMware</span>
+                        <span class="tech-badge">Proxmox</span>
+                    </div>
+                </div>
+                
+                <!-- Network Engineering -->
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-network-wired"></i>
+                    </div>
+                    <h3 class="service-title">Network Engineering</h3>
+                    <p class="service-description">
+                        Design and implementation of robust network infrastructures. Specializing in routing, switching, firewalls, and network security solutions.
+                    </p>
+                    <div class="tech-badges">
+                        <span class="tech-badge">pfSense</span>
+                        <span class="tech-badge">OPNsense</span>
+                        <span class="tech-badge">VPN</span>
+                        <span class="tech-badge">VLAN</span>
+                    </div>
+                </div>
+                
+                <!-- Cloud & Virtualization -->
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-cloud"></i>
+                    </div>
+                    <h3 class="service-title">Cloud & Virtualization</h3>
+                    <p class="service-description">
+                        Implementation of virtualization technologies and cloud solutions. From VMware and Proxmox to containerization with Docker and Kubernetes.
+                    </p>
+                    <div class="tech-badges">
+                        <span class="tech-badge">Docker</span>
+                        <span class="tech-badge">Kubernetes</span>
+                        <span class="tech-badge">K3s</span>
+                        <span class="tech-badge">Azure</span>
+                    </div>
+                </div>
+                
+                <!-- M365 Migrations -->
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fab fa-microsoft"></i>
+                    </div>
+                    <h3 class="service-title">M365 Migrations</h3>
+                    <p class="service-description">
+                        Seamless migration to Microsoft 365 environments. From email and SharePoint to Teams and OneDrive, ensuring minimal disruption to your business.
+                    </p>
+                    <div class="tech-badges">
+                        <span class="tech-badge">Exchange</span>
+                        <span class="tech-badge">SharePoint</span>
+                        <span class="tech-badge">Azure AD</span>
+                        <span class="tech-badge">Teams</span>
+                    </div>
+                </div>
+                
+                <!-- IT Security -->
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 class="service-title">IT Security</h3>
+                    <p class="service-description">
+                        Comprehensive security solutions to protect your business. Including firewall configuration, VPN setup, security audits, and best practices implementation.
+                    </p>
+                    <div class="tech-badges">
+                        <span class="tech-badge">Zero Trust</span>
+                        <span class="tech-badge">Cloudflare</span>
+                        <span class="tech-badge">Endpoint Security</span>
+                        <span class="tech-badge">Auditing</span>
+                    </div>
+                </div>
+                
+                <!-- DevOps & Automation -->
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-code-branch"></i>
+                    </div>
+                    <h3 class="service-title">DevOps & Automation</h3>
+                    <p class="service-description">
+                        Infrastructure as code, CI/CD pipelines, and automation solutions using industry-standard tools and best practices to streamline your operations.
+                    </p>
+                    <div class="tech-badges">
+                        <span class="tech-badge">Ansible</span>
+                        <span class="tech-badge">Python</span>
+                        <span class="tech-badge">PowerShell</span>
+                        <span class="tech-badge">Bash</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Live Lab Section -->
+    <section id="lab" class="lab">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Live Infrastructure Lab</h2>
+                <p class="section-description">
+                    I maintain a production-grade homelab that serves as both a testing ground and showcase for my technical skills.
+                </p>
+            </div>
+            
+            <div class="lab-grid">
+                <div class="lab-card">
+                    <h3 class="lab-card-title">Lab Architecture</h3>
+                    <p class="lab-card-description">
+                        My lab consists of multiple physical and virtual machines running Proxmox, Docker, and Kubernetes (K3s), all secured behind Cloudflare Zero Trust.
+                    </p>
+                    
+                    <h4 class="lab-subtitle">Current Infrastructure:</h4>
+                    <ul class="lab-list">
+                        <li><span class="bullet"></span>Proxmox Hypervisor Cluster</li>
+                        <li><span class="bullet"></span>OPNsense Router (Physical + VM)</li>
+                        <li><span class="bullet"></span>K3s Kubernetes Cluster</li>
+                        <li><span class="bullet"></span>Traefik Ingress Controller</li>
+                        <li><span class="bullet"></span>Gitea, VSCode Server, NAS</li>
+                        <li><span class="bullet"></span>Cloudflared Zero Trust Tunnel</li>
+                    </ul>
+                    
+                    <div class="lab-buttons">
+                        <a href="https://dashboard.argobox.com" class="btn btn-primary" target="_blank">
+                            <span class="flex-center">
+                                <span class="live-indicator"></span>
+                                <span>View Live Dashboard</span>
+                            </span>
+                        </a>
+                        <a href="https://sandbox.argobox.com" class="btn btn-outline" target="_blank">Try Ansible Sandbox</a>
+                    </div>
+                </div>
+                
+                <div class="lab-card">
+                    <h3 class="lab-card-title">Real-Time Metrics</h3>
+                    
+                    <div class="metric">
+                        <div class="metric-header">
+                            <span class="metric-name">CPU Usage</span>
+                            <span class="metric-value">42%</span>
+                        </div>
+                        <div class="metric-bar">
+                            <div class="metric-progress" style="width: 42%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="metric">
+                        <div class="metric-header">
+                            <span class="metric-name">Memory</span>
+                            <span class="metric-value">57%</span>
+                        </div>
+                        <div class="metric-bar">
+                            <div class="metric-progress" style="width: 57%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="metric">
+                        <div class="metric-header">
+                            <span class="metric-name">Storage</span>
+                            <span class="metric-value">63%</span>
+                        </div>
+                        <div class="metric-bar">
+                            <div class="metric-progress" style="width: 63%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="metric">
+                        <div class="metric-header">
+                            <span class="metric-name">Network</span>
+                            <span class="metric-value">28%</span>
+                        </div>
+                        <div class="metric-bar">
+                            <div class="metric-progress" style="width: 28%"></div>
+                        </div>
+                    </div>
+                    
+                    <h4 class="lab-subtitle">Active Services:</h4>
+                    <div class="services-grid-small">
+                        <div class="service-tag"><span class="status-dot"></span>Gitea</div>
+                        <div class="service-tag"><span class="status-dot"></span>VSCode Server</div>
+                        <div class="service-tag"><span class="status-dot"></span>rTorrent</div>
+                        <div class="service-tag"><span class="status-dot"></span>NAS</div>
+                        <div class="service-tag"><span class="status-dot"></span>Traefik</div>
+                        <div class="service-tag"><span class="status-dot"></span>K3s</div>
+                        <div class="service-tag"><span class="status-dot"></span>Cloudflared</div>
+                        <div class="service-tag"><span class="status-dot"></span>FileBrowser</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sample Docker configuration -->
+            <div class="code-card">
+                <h3 class="code-card-title">How I'm Running Services</h3>
+                <p class="code-card-description">
+                    Here's a sample of how I deploy and manage services in my infrastructure:
+                </p>
+                
+                <div class="code-block">
+                    <code>
+                        <span class="comment"># K3s deployment for Gitea with persistent storage</span><br>
+                        <span class="keyword">apiVersion</span>: apps/v1<br>
+                        <span class="keyword">kind</span>: Deployment<br>
+                        <span class="keyword">metadata</span>:<br>
+                        &nbsp;&nbsp;<span class="keyword">name</span>: gitea<br>
+                        &nbsp;&nbsp;<span class="keyword">namespace</span>: argobox<br>
+                        <span class="keyword">spec</span>:<br>
+                        &nbsp;&nbsp;<span class="keyword">replicas</span>: 1<br>
+                        &nbsp;&nbsp;<span class="function">selector</span>:<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="function">matchLabels</span>:<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">app</span>: gitea<br>
+                        &nbsp;&nbsp;<span class="function">template</span>:<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="function">metadata</span>:<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">labels</span>:<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">app</span>: gitea<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="function">spec</span>:<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">containers</span>:<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- <span class="keyword">name</span>: gitea<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">image</span>: <span class="string">gitea/gitea:latest</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">ports</span>:<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- <span class="keyword">containerPort</span>: 3000<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">volumeMounts</span>:<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- <span class="keyword">name</span>: gitea-data<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">mountPath</span>: <span class="string">/data</span><br>
+                    </code>
+                </div>
+            </div>
+        </div>
+    </section>
     
-    <!-- FontAwesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- Projects Section -->
+    <section id="projects" class="projects">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Featured Projects</h2>
+                <p class="section-description">
+                    A showcase of technical solutions I've built and deployed.
+                </p>
+            </div>
+            
+            <div class="projects-grid">
+                <div class="project-card">
+                    <div class="project-icon">
+                        <i class="fas fa-map-marked-alt"></i>
+                    </div>
+                    <h3 class="project-title">TerraTracer</h3>
+                    <p class="project-description">
+                        A GIS mapping tool for prospectors to automate mining claim boundary plotting, terrain analysis, and compliance with BLM/state regulations.
+                    </p>
+                    <div class="tech-badges">
+                        <span class="tech-badge">Python</span>
+                        <span class="tech-badge">Node.js</span>
+                        <span class="tech-badge">JavaScript</span>
+                        <span class="tech-badge">GIS</span>
+                    </div>
+                </div>
+                
+                <div class="project-card">
+                    <div class="project-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 class="project-title">Zero Trust Lab</h3>
+                    <p class="project-description">
+                        A secure home lab infrastructure using Cloudflare Zero Trust tunnels, network segmentation, and security best practices.
+                    </p>
+                    <div class="tech-badges">
+                        <span class="tech-badge">Cloudflare</span>
+                        <span class="tech-badge">OPNsense</span>
+                        <span class="tech-badge">VLAN</span>
+                        <span class="tech-badge">VPN</span>
+                    </div>
+                </div>
+                
+                <div class="project-card">
+                    <div class="project-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3 class="project-title">Ansible Sandbox</h3>
+                    <p class="project-description">
+                        An interactive demo environment where users can spin up preconfigured services using Ansible automation.
+                    </p>
+                    <div class="tech-badges">
+                        <span class="tech-badge">Ansible</span>
+                        <span class="tech-badge">Proxmox</span>
+                        <span class="tech-badge">Python</span>
+                        <span class="tech-badge">Docker</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
     
-    <style>
-        :root {
-            /* Main Colors */
-            --primary-bg: #0f172a;
-            --secondary-bg: #1e293b;
-            --accent: #3b82f6;
-            --accent-darker: #2563eb;
-            --accent-gradient: linear-gradient(135deg, #2563eb, #3b82f6);
-            --accent-glow: 0 0 15px rgba(59, 130, 246, 0.5);
+    <!-- Experience Section (Optional) -->
+    <section id="experience" class="experience">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Professional Experience</h2>
+                <p class="section-description">
+                    A history of delivering reliable IT infrastructure and solutions.
+                </p>
+            </div>
             
-            /* Text Colors */
-            --text-primary: #e2e8f0;
-            --text-secondary: #94a3b8;
-            --text-accent: #3b82f6;
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <h3 class="timeline-title">Inovin LLC</h3>
+                        <h4 class="timeline-subtitle">Freelance Consultant – GIS, Infrastructure & Security Solutions</h4>
+                        <div class="timeline-date">April 2023 – Present</div>
+                        <p class="timeline-description">
+                            Providing specialized consulting services in virtualization, containerization, network security, and custom GIS solutions.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <h3 class="timeline-title">Previous Roles</h3>
+                        <h4 class="timeline-subtitle">System & Network Engineering Positions</h4>
+                        <div class="timeline-date">Prior Experience</div>
+                        <p class="timeline-description">
+                            Extensive experience in MSPs, network engineering, and diverse IT environments.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Let's Connect</h2>
+                <p class="section-description">
+                    Have a project in mind? Reach out to discuss how I can help.
+                </p>
+            </div>
             
-            /* Status Colors */
-            --success: #10b981;
-            --warning: #f59e0b;
-            --error: #ef4444;
-            --info: #0ea5e9;
+            <div class="contact-grid">
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <h3 class="contact-item-title">Email</h3>
+                        <p><a href="mailto:contact@argobox.com">contact@argobox.com</a></p>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fab fa-linkedin"></i>
+                        </div>
+                        <h3 class="contact-item-title">LinkedIn</h3>
+                        <p><a href="https://linkedin.com/in/yourprofile" target="_blank">Connect on LinkedIn</a></p>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fab fa-github"></i>
+                        </div>
+                        <h3 class="contact-item-title">GitHub</h3>
+                        <p><a href="https://github.com/yourusername" target="_blank">View My Projects</a></p>
+                    </div>
+                </div>
+                
+                <div class="contact-form-container">
+                    <form id="contact-form" class="contact-form">
+                        <div class="form-group">
+                            <label for="name">Name</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="subject">Subject</label>
+                            <input type="text" id="subject" name="subject" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="message">Message</label>
+                            <textarea id="message" name="message" rows="5" required></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <span class="logo-text">Argobox</span>
+                    <span class="logo-dot">.com</span>
+                </div>
+                
+                <div class="footer-links">
+                    <a href="#home">Home</a>
+                    <a href="#services">Services</a>
+                    <a href="#lab">Live Lab</a>
+                    <a href="#projects">Projects</a>
+                    <a href="#experience">Experience</a>
+                    <a href="#contact">Contact</a>
+                </div>
+                
+                <div class="footer-social">
+                    <a href="https://linkedin.com/in/yourprofile" target="_blank"><i class="fab fa-linkedin"></i></a>
+                    <a href="https://github.com/yourusername" target="_blank"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
             
-            /* UI Elements */
-            --border: rgba(71, 85, 105, 0.5);
-            --card-bg: rgba(30, 41, 59, 0.8);
-            --card-hover-bg: rgba(30, 41, 59, 0.95);
-            --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
-            --glass-effect: saturate(180%) blur(10px);
-            
-            /* Animation Timing */
-            --transition-fast: 0.2s ease;
-            --transition-normal: 0.3s ease;
-            --transition-slow: 0.5s ease;
-        }
-        
-        /* Reset & Base Styles */
-        *, *::before, *::after {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        html {
-            scroll-behavior: smooth;
-            scroll-padding-top: 80px;
-        }
-        
-        body {
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            background-color: var(--primary-bg);
-            color: var(--text-primary);
-            line-height: 1.6;
-            overflow-x: hidden;
-            min-height: 100vh;
-            background-image: 
-                radial-gradient(circle at 20% 35%, rgba(29, 78, 216, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 75% 60%, rgba(14, 165, 233, 0.1) 0%, transparent 50%);
-        }
-        
-        /* Typography */
-        h1, h2, h3, h4, h5, h6 {
-            font-weight: 700;
-            line-height: 1.2;
-        }
-        
-        a {
-            text-decoration: none;
-            color: var(--accent);
-            transition: color var(--transition-normal);
-        }
-        
-        a:hover {
-            color: var(--accent-darker);
-        }
-        
-        /* Layout */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 1.5rem;
-        }
-        
-        section {
-            padding: 6rem 0;
-            position: relative;
-        }
-        
-        /* Button Styles */
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0.75rem 1.5rem;
-            font-weight: 600;
-            border-radius: 0.5rem;
-            transition: all var(--transition-normal);
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            border: none;
-            outline: none;
-        }
-        
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.1);
-            transform: translateX(-100%) rotate(45deg);
-            transition: transform 0.6s;
-        }
-        
-        .btn:hover::before {
-            transform: translateX(100%) rotate(45deg);
-        }
-        
-        .btn-primary {
-            background: var(--accent-gradient);
-            color: white;
-            box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.2), 0 2px 4px -1px rgba(59, 130, 246, 0.1);
-        }
-        
-        .btn-primary:hover {
-            box-shadow: var(--accent-glow), 0 10px 15px -3px rgba(59, 130, 246, 0.3);
-            transform: translateY(-2px);
-        }
-        
-        .btn-outline {
-            background-color: transparent;
-            border: 2px solid var(--accent);
-            color: var(--accent);
-        }
-        
-        .btn-outline:hover {
-            background-color: var(--accent);
-            color: white;
-            box-shadow: var(--accent-glow);
-            transform: translateY(-2px);
-        }
-        
-        .btn-icon {
-            margin-right: 0.5rem;
-        }
-        
-        /* Navigation */
-        .navbar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 1000;
-            backdrop-filter: var(--glass-effect);
-            -webkit-backdrop-filter: var(--glass-effect);
-            background-color: rgba(15, 23, 42, 0.8);
-            border-bottom: 1px solid var(--border);
-            transition: all var(--transition-normal);
-        }
-        
-        .navbar.scrolled {
-            background-color: rgba(15, 23, 42, 0.95);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-        }
-        
-        .nav-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            height: 4.5rem;
-        }
-        
-        .logo {
-            display: flex;
-            align-items: center;
-            font-weight: 700;
-            font-size: 1.5rem;
-        }
-        
-        .logo-text {
-            color: var(--accent);
-        }
-        
-        .logo-dot {
-            color: var(--text-primary);
-        }
-        
-        .nav-links {
-            display: flex;
-            align-items: center;
-            gap: 2rem;
-        }
-        
-        .nav-link {
-            position: relative;
-            color: var(--text-secondary);
-            font-weight: 500;
-            padding: 0.5rem;
-            transition: color var(--transition-normal);
-        }
-        
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: var(--accent-gradient);
-            transition: width var(--transition-normal);
-            border-radius: 1px;
-        }
-        
-        .nav-link:hover, .nav-link.active {
-            color: var(--text-primary);
-        }
-        
-        .nav-link:hover::after, .nav-link.active::after {
-            width: 100%;
-        }
-        
-        .dashboard-btn {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: rgba(59, 130, 246, 0.15);
-            color: var(--text-primary);
-            padding: 0.5rem 1rem;
-            border-radius: 9999px;
-            font-weight: 500;
-            transition: all var(--transition-normal);
-        }
-        
-        .dashboard-btn:hover {
-            background: rgba(59, 130, 246, 0.3);
-            color: var(--text-primary);
-            transform: translateY(-1px);
-        }
-        
-        .mobile-menu-btn {
-            display: none;
-            background: transparent;
-            border: none;
-            color: var(--text-primary);
-            cursor: pointer;
-            font-size: 1.5rem;
-        }
-        
-        /* Hero Section */
-        .hero {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            position: relative;
-            overflow: hidden;
-            padding-top: 4.5rem;
-            padding-bottom: 2rem;
-        }
-        
-        .hero-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            opacity: 0.05;
-            overflow: hidden;
-        }
-        
-        .hero-grid {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: linear-gradient(var(--accent) 1px, transparent 1px), 
-                              linear-gradient(90deg, var(--accent) 1px, transparent 1px);
-            background-size: 50px 50px;
-            background-position: center center;
-            opacity: 0.05;
-        }
-        
-        .hero-content {
-            display: flex;
-            align-items: center;
-            gap: 4rem;
-        }
-        
-        .hero-text {
-            flex: 1;
-        }
-        
-        .hero-title {
-            font-size: 3.5rem;
-            margin-bottom: 1.5rem;
-        }
-        
-        .highlight {
-            background: var(--accent-gradient);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            position: relative;
-        }
-        
-        .highlight::after {
-            content: '';
-            position: absolute;
-            width: 100%;
-            height: 5px;
-            bottom: 5px;
-            left: 0;
-            background: var(--accent-gradient);
-            border-radius: 5px;
-            opacity: 0.3;
-            z-index: -1;
-        }
-        
-        .hero-subtitle {
-            font-size: 1.2rem;
-            color: var(--text-secondary);
-            margin-bottom: 2rem;
-            max-width: 550px;
-        }
-        
-        .status-indicator {
-            display: inline-flex;
-            align-items: center;
-            background: rgba(59, 130, 246, 0.15);
-            padding: 0.5rem 1rem;
-            border-radius: 9999px;
-            margin-bottom: 1.5rem;
-        }
-        
-        .live-dot {
-            width: 10px;
-            height: 10px;
-            background-color: var(--success);
-            border-radius: 50%;
-            margin-right: 0.5rem;
-            position: relative;
-        }
-        
-        .live-dot::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            background-color: var(--success);
-            animation: pulse 2s infinite;
-            z-index: -1;
-        }
-        
-        @keyframes pulse {
-            0% {
-                transform: scale(1);
-                opacity: 0.8;
-            }
-            70% {
-                transform: scale(2);
-                opacity: 0;
-            }
-            100% {
-                transform: scale(1);
-                opacity: 0;
-            }
-        }
-        
-        .terminal {
-            font-family: 'JetBrains Mono', monospace;
-            background-color: rgba(11, 17, 32, 0.8);
-            color: var(--text-secondary);
-            margin-bottom: 2rem;
-            border-radius: 0.5rem;
-            padding: 0.75rem 1rem;
-            display: inline-block;
-            white-space: nowrap;
-            overflow: hidden;
-            max-width: 100%;
-        }
-        
-        .typing-effect {
-            display: inline-block;
-            overflow: hidden;
-            border-right: 2px solid var(--accent);
-            width: 0;
-            animation: typing 2.5s steps(30) 0.5s forwards, blink 1s step-end infinite;
-        }
-        
-        @keyframes typing {
-            from { width: 0 }
-            to { width: 100% }
-        }
-        
-        @keyframes blink {
-            50% { border-color: transparent }
-        }
-        
-        .hero-buttons {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-            margin-top: 2rem;
-        }
-        
-        .hero-visual {
-            flex: 1;
-            min-width: 300px;
-        }
-        
-        .tech-dashboard {
-            background-color: var(--card-bg);
-            border-radius: 1rem;
-            overflow: hidden;
-            box-shadow: var(--card-shadow);
-            border: 1px solid var(--border);
-            position: relative;
-            transform: perspective(1000px) rotateY(-5deg) rotateX(5deg);
-            transition: all var(--transition-normal);
-            animation: float 6s ease-in-out infinite;
-        }
-        
-        .tech-dashboard:hover {
-            transform: perspective(1000px) rotateY(0deg) rotateX(0deg);
-        }
-        
-        @keyframes float {
-            0% { transform: perspective(1000px) rotateY(-5deg) rotateX(5deg) translateY(0px); }
-            50% { transform: perspective(1000px) rotateY(-5deg) rotateX(5deg) translateY(-10px); }
-            100% { transform: perspective(1000px) rotateY(-5deg) rotateX(5deg) translateY(0px); }
-        }
-        
-        .data-stream {
-            height: 200px;
-            position: relative;
-            overflow: hidden;
-            background-color: var(--secondary-bg);
-            background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                              linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-            background-size: 20px 20px;
-        }
-        
-        .data-line {
-            position: absolute;
-            height: 1px;
-            background: var(--accent-gradient);
-            opacity: 0.7;
-            animation: dataflow linear infinite;
-        }
-        
-        @keyframes dataflow {
-            from { transform: translateY(-100%); }
-            to { transform: translateY(500%); }
-        }
-        
-        .terminal-output {
-            background-color: rgb(15, 20, 30);
-            padding: 1rem;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.85rem;
-            line-height: 1.5;
-        }
-        
-        .terminal-line {
-            margin-bottom: 0.5rem;
-        }
-        
-        .terminal-success {
-            color: var(--success);
-        }
-        
-        .terminal-warning {
-            color: var(--warning);
-        }
-        
-        .terminal-error {
-            color: var(--error);
-        }
-        
-        .terminal-info {
-            color: var(--info);
-        }
-        
-        /* Services Section */
-        .services {
-            background-color: var(--secondary-bg);
-            position: relative;
-            isolation: isolate;
-        }
-        
-        .services::before {
-            content: '';
-            position: absolute;
-            width: 200%;
-            height: 200px;
-            top: -100px;
-            left: -50%;
-            background-color: var(--secondary-bg);
-            transform: rotate(-2deg);
-            z-index: -1;
-        }
-        
-        .section-header {
-            text-align: center;
-            margin-bottom: 4rem;
-        }
-        
-        .section-title {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-            position: relative;
-            display: inline-block;
-        }
-        
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: -0.5rem;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80px;
-            height: 4px;
-            background: var(--accent-gradient);
-            border-radius: 2px;
-        }
-        
-        .section-description {
-            max-width: 700px;
-            margin: 0 auto;
-            color: var(--text-secondary);
-            font-size: 1.1rem;
-        }
-        
-        .services-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 2rem;
-        }
-        
-        .service-card {
-            background-color: var(--card-bg);
-            border-radius: 1rem;
-            border: 1px solid var(--border);
-            padding: 2rem;
-            transition: all var(--transition-normal);
-            position: relative;
-            overflow: hidden;
-            z-index: 1;
-        }
-        
-        .service-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 0;
-            background: var(--accent-gradient);
-            opacity: 0.1;
-            transition: height var(--transition-slow);
-            z-index: -1;
-        }
-        
-        .service-card:hover {
-            transform: translateY(-10px);
-            box-shadow: var(--card-shadow);
-            border-color: var(--accent);
-        }
-        
-        .service-card:hover::before {
-            height: 100%;
-        }
-        
-        .service-icon {
-            font-size: 2.5rem;
-            color: var(--accent);
-            margin-bottom: 1.5rem;
-            transition: all var(--transition-normal);
-        }
-        
-        .service-card:hover .service-icon {
-            transform: scale(1.1);
-            text-shadow: var(--accent-glow);
-        }
-        
-        .service-title {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-        }
-        
-        .service-description {
-            color: var(--text-secondary);
-            margin-bottom: 1.5rem;
-            transition: color var(--transition-normal);
-        }
-        
-        .service-card:hover .service-description {
-            color: var(--text-primary);
-        }
-        
-        .tech-badges {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-        }
-        
-        .tech-badge {
-            background-color: rgba(59, 130, 246, 0.1);
-            border: 1px solid rgba(59, 130, 246, 0.3);
-            color: var(--accent);
-            font-size: 0.8rem;
-            font-weight: 500;
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            transition: all var(--transition-normal);
-        }
-        
-        .service-card:hover .tech-badge {
-            background-color: rgba(59, 130, 246, 0.2);
-            border-color: var(--accent);
-        }
-        
-        /* Lab Section */
-        .lab-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-bottom: 3rem;
-        }
-        
-        .lab-card {
-            background-color: var(--card-bg);
-            border-radius: 1rem;
-            border: 1px solid var(--border);
-            padding: 2rem;
-            height: 100%;
-            transition: all var(--transition-normal);
-        }
-        
-        .lab-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--card-shadow);
-            border-color: var(--accent);
-        }
-        
-        .lab-card-title {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-            color: var(--text-primary);
-        }
-        
-        .lab-card-description {
-            color: var(--text-secondary);
-            margin-bottom: 1.5rem;
-        }
-        
-        .lab-subtitle {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--accent);
-            margin-bottom: 1rem;
-        }
-        
-        .lab-list {
-            margin-bottom: 1.5rem;
-        }
-        
-        .lab-list-item {
-            display: flex;
-            margin-bottom: 0.75rem;
-            color: var(--text-secondary);
-        }
-        
-        .lab-list-bullet {
-            color: var(--accent);
-            margin-right: 0.75rem;
-        }
-        
-        .lab-buttons {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-            margin-top: 2rem;
-        }
-        
-        /* Metrics */
-        .metric {
-            margin-bottom: 1.5rem;
-        }
-        
-        .metric-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 0.5rem;
-        }
-        
-        .metric-label {
-            color: var(--text-secondary);
-        }
-        
-        .metric-value {
-            color: var(--accent);
-            font-weight: 500;
-        }
-        
-        .metric-bar {
-            height: 0.5rem;
-            background-color: rgba(59, 130, 246, 0.1);
-            border-radius: 9999px;
-            overflow: hidden;
-        }
-        
-        .metric-progress {
-            height: 100%;
-            background: var(--accent-gradient);
-            border-radius: 9999px;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .metric-progress::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(90deg, 
-                        transparent 0%, 
-                        rgba(255, 255, 255, 0.2) 50%, 
-                        transparent 100%);
-            animation: shimmer 2s infinite;
-        }
-        
-        @keyframes shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-        
-        .services-grid-small {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-            gap: 0.75rem;
-        }
-        
-        .service-status {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            background-color: rgba(59, 130, 246, 0.1);
-            padding: 0.5rem;
-            border-radius: 0.5rem;
-            font-size: 0.85rem;
-        }
-        
-        .status-indicator {
-            display: flex;
-            align-items: center;
-            font-size: 0.85rem;
-        }
-        
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background-color: var(--success);
-            margin-right: 0.5rem;
-        }
-        
-        /* Code Section */
-        .code-card {
-            background-color: var(--card-bg);
-            border-radius: 1rem;
-            border: 1px solid var(--border);
-            padding: 2rem;
-            margin-bottom: 2rem;
-            transition: all var(--transition-normal);
-        }
-        
-        .code-card:hover {
-            box-shadow: var(--card-shadow);
-            border-color: var(--accent);
-        }
-        
-        .code-block {
-            background-color: rgb(15, 20, 30);
-            border-radius: 0.5rem;
-            padding: 1.5rem;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.85rem;
-            line-height: 1.6;
-            overflow-x: auto;
-        }
-        
-        .code-comment { color: #8b949e; }
-        .code-keyword { color: #ff7b72; }
-        .code-function { color: #d2a8ff; }
-        .code-string { color: #a5d6ff; }
-        
-        /* Projects Section */
-        .projects {
-            background-color: var(--secondary-bg);
-        }
-        
-        .project-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 2rem;
-        }
-        
-        .project-card {
-            background-color: var(--card-bg);
-            border-radius: 1rem;
-            border: 1px solid var(--border);
-            padding: 2rem;
-            transition: all var(--transition-normal);
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .project-card:hover {
-            transform: translateY(-10px);
-            box-shadow: var(--card-shadow);
-            border-color: var(--accent);
-        }
-        
-        .project-icon {
-            font-size: 2.5rem;
-            color: var(--accent);
-            margin-bottom: 1.5rem;
-        }
-        
-        .project-title {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-        }
-        
-        .project-description {
-            color: var(--text-secondary);
-            margin-bottom: 1.5rem;
-            flex-grow: 1;
-        }
-        
-        /* Experience Section */
-        .timeline {
-            position: relative;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        
-        .timeline::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            width: 2px;
-            background-color: var(--border);
-            left: 25px;
-        }
-        
-        .timeline-item {
-            position: relative;
-            padding-left: 4rem;
-            margin-bottom: 3rem;
-        }
-        
-        .timeline-dot {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 16px;
-            height: 16px;
-            background: var(--accent-gradient);
-            border-radius: 50%;
-            transform: translateX(-7px);
-            z-index: 1;
-        }
-        
-        .timeline-content {
-            background-color: var(--card-bg);
-            border-radius: 1rem;
-            border: 1px solid var(--border);
-            padding: 1.5rem;
-            transition: all var(--transition-normal);
-        }
-        
-        .timeline-content:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--card-shadow);
-            border-color: var(--accent);
-        }
-        
-        .timeline-title {
-            font-size: 1.25rem;
-            margin-bottom: 0.5rem;
-        }
-        
-        .timeline-subtitle {
-            color: var(--accent);
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-        }
-        
-        .timeline-date {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            margin-bottom: 1rem;
-        }
+            <div class="footer-bottom">
+                <p>&copy; <span id="current-year">2025</span> Argobox.com. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>
