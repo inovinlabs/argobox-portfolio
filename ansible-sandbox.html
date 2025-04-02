@@ -1,0 +1,2243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Argobox | Ansible Sandbox</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Interactive Ansible playbook testing environment. Deploy test configurations and see infrastructure automation in action.">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22256%22 height=%22256%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%230f172a%22></rect><path fill=%22%233b82f6%22 d=%22M30 40L50 20L70 40L50 60L30 40Z%22></path><path fill=%22%233b82f6%22 d=%22M50 60L70 40L70 70L50 90L30 70L30 40L50 60Z%22 fill-opacity=%220.6%22></path></svg>">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <style>
+        :root {
+            /* Main Colors */
+            --primary-bg: #0f172a;
+            --secondary-bg: #1e293b;
+            --accent: #3b82f6;
+            --accent-darker: #2563eb;
+            --accent-gradient: linear-gradient(135deg, #2563eb, #3b82f6);
+            --accent-red: #ef4444;
+            --accent-green: #10b981;
+            --accent-yellow: #f59e0b;
+            --accent-glow: 0 0 15px rgba(59, 130, 246, 0.5);
+            
+            /* Text Colors */
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --text-accent: #3b82f6;
+            
+            /* Status Colors */
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --info: #0ea5e9;
+            
+            /* UI Elements */
+            --border: rgba(71, 85, 105, 0.5);
+            --card-bg: rgba(30, 41, 59, 0.8);
+            --card-hover-bg: rgba(30, 41, 59, 0.95);
+            --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            --glass-effect: saturate(180%) blur(10px);
+            
+            /* Animation Timing */
+            --transition-fast: 0.2s ease;
+            --transition-normal: 0.3s ease;
+            --transition-slow: 0.5s ease;
+        }
+        
+        /* Reset & Base Styles */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--primary-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 20% 35%, rgba(29, 78, 216, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 75% 60%, rgba(14, 165, 233, 0.1) 0%, transparent 50%);
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+        
+        /* Sandbox Specific Styles */
+        .sandbox-container {
+            padding: 5rem 0 2rem;
+        }
+        
+        .sandbox-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .sandbox-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .sandbox-title h1 {
+            font-size: 1.75rem;
+            font-weight: 600;
+        }
+        
+        .sandbox-actions {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .sandbox-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+        }
+        
+        .sandbox-btn:hover {
+            background-color: var(--card-hover-bg);
+            border-color: var(--accent);
+        }
+        
+        .sandbox-btn i {
+            color: var(--accent);
+        }
+        
+        .btn-primary {
+            background: var(--accent-gradient);
+            color: white;
+            border: none;
+        }
+        
+        .btn-primary:hover {
+            box-shadow: var(--accent-glow);
+            transform: translateY(-2px);
+        }
+        
+        .sandbox-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 1.5rem;
+        }
+        
+        .playbook-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+            scrollbar-width: thin;
+            scrollbar-color: var(--border) transparent;
+        }
+        
+        .playbook-list::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .playbook-list::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        .playbook-list::-webkit-scrollbar-thumb {
+            background-color: var(--border);
+            border-radius: 3px;
+        }
+        
+        .playbook-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+        }
+        
+        .playbook-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--accent);
+            box-shadow: var(--card-shadow);
+        }
+        
+        .playbook-card.active {
+            border-color: var(--accent);
+            background-color: rgba(59, 130, 246, 0.1);
+        }
+        
+        .playbook-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+        
+        .playbook-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .playbook-tag {
+            font-size: 0.75rem;
+            padding: 0.15rem 0.5rem;
+            border-radius: 9999px;
+            background-color: rgba(59, 130, 246, 0.1);
+            color: var(--accent);
+            font-weight: 500;
+        }
+        
+        .playbook-description {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+        
+        .playbook-details {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+        
+        .playbook-detail {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+        
+        .playbook-detail i {
+            font-size: 0.85rem;
+            color: var(--accent);
+        }
+        
+        .sandbox-preview {
+            display: flex;
+            flex-direction: column;
+            min-height: 80vh;
+        }
+        
+        .preview-container {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .preview-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .preview-tabs {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .preview-tab {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            padding-bottom: 0.25rem;
+            border-bottom: 2px solid transparent;
+            transition: all var(--transition-normal);
+        }
+        
+        .preview-tab:hover {
+            color: var(--text-primary);
+        }
+        
+        .preview-tab.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+        
+        .preview-content {
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .tab-content {
+            display: none;
+            flex: 1;
+            overflow: auto;
+            padding: 1.5rem;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .code-editor {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            overflow: auto;
+            height: 100%;
+        }
+        
+        .code-line {
+            display: flex;
+        }
+        
+        .line-number {
+            width: 3rem;
+            text-align: right;
+            padding-right: 1rem;
+            user-select: none;
+            color: var(--text-secondary);
+            opacity: 0.5;
+        }
+        
+        .line-content {
+            flex: 1;
+        }
+        
+        .code-comment {
+            color: #6b7280;
+            font-style: italic;
+        }
+        
+        .code-key {
+            color: #93c5fd;
+        }
+        
+        .code-value {
+            color: #fbbf24;
+        }
+        
+        .code-string {
+            color: #a3be8c;
+        }
+        
+        .preview-form {
+            padding: 1.5rem;
+            overflow: auto;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background-color: var(--primary-bg);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            transition: all var(--transition-normal);
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+        
+        .form-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1em;
+        }
+        
+        .form-text {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+        
+        .form-check {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+        
+        .form-check-input {
+            margin-right: 0.75rem;
+            appearance: none;
+            width: 1.25rem;
+            height: 1.25rem;
+            background-color: var(--primary-bg);
+            border: 1px solid var(--border);
+            border-radius: 0.25rem;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            position: relative;
+        }
+        
+        .form-check-input:checked {
+            background-color: var(--accent);
+            border-color: var(--accent);
+        }
+        
+        .form-check-input:checked::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 0.85rem;
+        }
+        
+        .form-check-label {
+            font-size: 0.9rem;
+        }
+        
+        .terminal {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            padding: 1.5rem;
+            background-color: #1a1a1a;
+            color: #e2e8f0;
+            overflow: auto;
+            height: 100%;
+            white-space: pre-wrap;
+        }
+        
+        .terminal-line {
+            margin-bottom: 0.5rem;
+        }
+        
+        .terminal-success {
+            color: var(--success);
+        }
+        
+        .terminal-error {
+            color: var(--error);
+        }
+        
+        .terminal-warning {
+            color: var(--warning);
+        }
+        
+        .terminal-command {
+            color: var(--accent);
+            font-weight: 500;
+        }
+        
+        .preview-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+        
+        .preview-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        
+        .status-ready {
+            background-color: var(--info);
+        }
+        
+        .status-running {
+            background-color: var(--warning);
+            animation: pulse 1s infinite;
+        }
+        
+        .status-success {
+            background-color: var(--success);
+        }
+        
+        .status-error {
+            background-color: var(--error);
+        }
+        
+        .preview-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .vm-status {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            padding: 1.5rem;
+            display: none;
+        }
+        
+        .vm-status.active {
+            display: flex;
+        }
+        
+        .vm-card {
+            background-color: rgba(30, 41, 59, 0.5);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .vm-icon {
+            width: 3rem;
+            height: 3rem;
+            background-color: var(--secondary-bg);
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--accent);
+        }
+        
+        .vm-info {
+            flex: 1;
+        }
+        
+        .vm-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .vm-details {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        
+        .vm-progress {
+            flex: 1;
+            height: 4px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+        
+        .vm-progress-bar {
+            height: 100%;
+            background-color: var(--accent);
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+        
+        .vm-state {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .vm-state-provisioning {
+            background-color: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+        
+        .vm-state-running {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+        
+        .vm-state-stopping {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--error);
+        }
+        
+        .time-remaining {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+        
+        .time-progress {
+            width: 100%;
+            height: 4px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 0.75rem;
+        }
+        
+        .time-progress-bar {
+            height: 100%;
+            background-color: var(--accent);
+            border-radius: 2px;
+            transition: width 1s linear;
+        }
+        
+        /* Footer */
+        .sandbox-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        
+        .back-to-site {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--accent);
+            font-weight: 500;
+            transition: all var(--transition-normal);
+        }
+        
+        .back-to-site:hover {
+            color: var(--accent-darker);
+            transform: translateX(-3px);
+        }
+        
+        /* Animation */
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            .sandbox-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .playbook-list {
+                max-height: initial;
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .sandbox-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .sandbox-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+            
+            .preview-tabs {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sandbox-container">
+        <div class="container">
+            <div class="sandbox-header">
+                <div class="sandbox-title">
+                    <h1>Ansible Sandbox</h1>
+                </div>
+                
+                <div class="sandbox-actions">
+                    <button class="sandbox-btn">
+                        <i class="fas fa-question-circle"></i>
+                        <span>Help</span>
+                    </button>
+                    <button class="sandbox-btn">
+                        <i class="fas fa-book"></i>
+                        <span>Documentation</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="sandbox-grid">
+                <div class="playbook-list">
+                    <div class="playbook-card active" data-playbook="web-server">
+                        <div class="playbook-header">
+                            <h3 class="playbook-title">Web Server Deployment</h3>
+                            <span class="playbook-tag">Basic</span>
+                        </div>
+                        <p class="playbook-description">
+                            Deploy a Nginx web server with a sample website in a controlled environment.
+                        </p>
+                        <div class="playbook-details">
+                            <div class="playbook-detail">
+                                <i class="fas fa-clock"></i>
+                                <span>Runtime: ~3 min</span>
+                            </div>
+                            <div class="playbook-detail">
+                                <i class="fas fa-server"></i>
+                                <span>1 VM</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="playbook-card" data-playbook="docker-compose">
+                        <div class="playbook-header">
+                            <h3 class="playbook-title">Docker Compose Stack</h3>
+                            <span class="playbook-tag">Intermediate</span>
+                        </div>
+                        <p class="playbook-description">
+                            Deploy a multi-container application using Docker Compose with automatic configuration.
+                        </p>
+                        <div class="playbook-details">
+                            <div class="playbook-detail">
+                                <i class="fas fa-clock"></i>
+                                <span>Runtime: ~5 min</span>
+                            </div>
+                            <div class="playbook-detail">
+                                <i class="fas fa-server"></i>
+                                <span>1 VM</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="playbook-card" data-playbook="k3s-cluster">
+                        <div class="playbook-header">
+                            <h3 class="playbook-title">K3s Kubernetes Cluster</h3>
+                            <span class="playbook-tag">Advanced</span>
+                        </div>
+                        <p class="playbook-description">
+                            Deploy a lightweight Kubernetes cluster with basic services and sample application.
+                        </p>
+                        <div class="playbook-details">
+                            <div class="playbook-detail">
+                                <i class="fas fa-clock"></i>
+                                <span>Runtime: ~8 min</span>
+                            </div>
+                            <div class="playbook-detail">
+                                <i class="fas fa-server"></i>
+                                <span>3 VMs</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="playbook-card" data-playbook="lamp-stack">
+                        <div class="playbook-header">
+                            <h3 class="playbook-title">LAMP Stack</h3>
+                            <span class="playbook-tag">Intermediate</span>
+                        </div>
+                        <p class="playbook-description">
+                            Deploy a Linux, Apache, MySQL, and PHP stack with a sample application.
+                        </p>
+                        <div class="playbook-details">
+                            <div class="playbook-detail">
+                                <i class="fas fa-clock"></i>
+                                <span>Runtime: ~4 min</span>
+                            </div>
+                            <div class="playbook-detail">
+                                <i class="fas fa-server"></i>
+                                <span>1 VM</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="playbook-card" data-playbook="security-hardening">
+                        <div class="playbook-header">
+                            <h3 class="playbook-title">Security Hardening</h3>
+                            <span class="playbook-tag">Advanced</span>
+                        </div>
+                        <p class="playbook-description">
+                            Apply security best practices to a Linux server including firewall, SSH hardening, and more.
+                        </p>
+                        <div class="playbook-details">
+                            <div class="playbook-detail">
+                                <i class="fas fa-clock"></i>
+                                <span>Runtime: ~6 min</span>
+                            </div>
+                            <div class="playbook-detail">
+                                <i class="fas fa-server"></i>
+                                <span>1 VM</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="sandbox-preview">
+                    <div class="preview-container">
+                        <div class="preview-header">
+                            <div class="preview-title">
+                                <i class="fas fa-file-code"></i>
+                                <span>Web Server Deployment</span>
+                            </div>
+                            <div class="preview-tabs">
+                                <div class="preview-tab active" data-tab="code">Playbook</div>
+                                <div class="preview-tab" data-tab="config">Configuration</div>
+                                <div class="preview-tab" data-tab="output">Output</div>
+                                <div class="preview-tab" data-tab="status">VM Status</div>
+                            </div>
+                        </div>
+                        <div class="preview-content">
+                            <div class="tab-content active" id="code-tab">
+                                <div class="code-editor">
+                                    <div class="code-line">
+                                        <span class="line-number">1</span>
+                                        <span class="line-content code-comment">---</span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">2</span>
+                                        <span class="line-content code-comment"># Web Server Deployment Playbook</span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">3</span>
+                                        <span class="line-content code-comment"># This playbook installs and configures a basic Nginx web server</span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">4</span>
+                                        <span class="line-content"></span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">5</span>
+                                        <span class="line-content">- <span class="code-key">name</span>: <span class="code-string">Deploy Web Server</span></span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">6</span>
+                                        <span class="line-content">  <span class="code-key">hosts</span>: <span class="code-value">all</span></span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">7</span>
+                                        <span class="line-content">  <span class="code-key">become</span>: <span class="code-value">yes</span></span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">8</span>
+                                        <span class="line-content">  <span class="code-key">vars</span>:</span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">9</span>
+                                        <span class="line-content">    <span class="code-key">web_domain</span>: <span class="code-string">example.local</span></span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">10</span>
+                                        <span class="line-content">    <span class="code-key">web_root</span>: <span class="code-string">/var/www/html</span></span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">11</span>
+                                        <span class="line-content">    <span class="code-key">enable_https</span>: <span class<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Argobox | Ansible Sandbox</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Interactive Ansible playbook testing environment. Deploy test configurations and see infrastructure automation in action.">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22256%22 height=%22256%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%230f172a%22></rect><path fill=%22%233b82f6%22 d=%22M30 40L50 20L70 40L50 60L30 40Z%22></path><path fill=%22%233b82f6%22 d=%22M50 60L70 40L70 70L50 90L30 70L30 40L50 60Z%22 fill-opacity=%220.6%22></path></svg>">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <style>
+        :root {
+            /* Main Colors */
+            --primary-bg: #0f172a;
+            --secondary-bg: #1e293b;
+            --accent: #3b82f6;
+            --accent-darker: #2563eb;
+            --accent-gradient: linear-gradient(135deg, #2563eb, #3b82f6);
+            --accent-red: #ef4444;
+            --accent-green: #10b981;
+            --accent-yellow: #f59e0b;
+            --accent-glow: 0 0 15px rgba(59, 130, 246, 0.5);
+            
+            /* Text Colors */
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --text-accent: #3b82f6;
+            
+            /* Status Colors */
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --info: #0ea5e9;
+            
+            /* UI Elements */
+            --border: rgba(71, 85, 105, 0.5);
+            --card-bg: rgba(30, 41, 59, 0.8);
+            --card-hover-bg: rgba(30, 41, 59, 0.95);
+            --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            --glass-effect: saturate(180%) blur(10px);
+            
+            /* Animation Timing */
+            --transition-fast: 0.2s ease;
+            --transition-normal: 0.3s ease;
+            --transition-slow: 0.5s ease;
+        }
+        
+        /* Reset & Base Styles */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--primary-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 20% 35%, rgba(29, 78, 216, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 75% 60%, rgba(14, 165, 233, 0.1) 0%, transparent 50%);
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+        
+        /* Sandbox Specific Styles */
+        .sandbox-container {
+            padding: 5rem 0 2rem;
+        }
+        
+        .sandbox-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .sandbox-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .sandbox-title h1 {
+            font-size: 1.75rem;
+            font-weight: 600;
+        }
+        
+        .sandbox-actions {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .sandbox-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+        }
+        
+        .sandbox-btn:hover {
+            background-color: var(--card-hover-bg);
+            border-color: var(--accent);
+        }
+        
+        .sandbox-btn i {
+            color: var(--accent);
+        }
+        
+        .btn-primary {
+            background: var(--accent-gradient);
+            color: white;
+            border: none;
+        }
+        
+        .btn-primary:hover {
+            box-shadow: var(--accent-glow);
+            transform: translateY(-2px);
+        }
+        
+        .sandbox-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 1.5rem;
+        }
+        
+        .playbook-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+            scrollbar-width: thin;
+            scrollbar-color: var(--border) transparent;
+        }
+        
+        .playbook-list::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .playbook-list::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        .playbook-list::-webkit-scrollbar-thumb {
+            background-color: var(--border);
+            border-radius: 3px;
+        }
+        
+        .playbook-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+        }
+        
+        .playbook-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--accent);
+            box-shadow: var(--card-shadow);
+        }
+        
+        .playbook-card.active {
+            border-color: var(--accent);
+            background-color: rgba(59, 130, 246, 0.1);
+        }
+        
+        .playbook-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+        
+        .playbook-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .playbook-tag {
+            font-size: 0.75rem;
+            padding: 0.15rem 0.5rem;
+            border-radius: 9999px;
+            background-color: rgba(59, 130, 246, 0.1);
+            color: var(--accent);
+            font-weight: 500;
+        }
+        
+        .playbook-description {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+        
+        .playbook-details {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+        
+        .playbook-detail {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+        
+        .playbook-detail i {
+            font-size: 0.85rem;
+            color: var(--accent);
+        }
+        
+        .sandbox-preview {
+            display: flex;
+            flex-direction: column;
+            min-height: 80vh;
+        }
+        
+        .preview-container {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .preview-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .preview-tabs {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .preview-tab {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            padding-bottom: 0.25rem;
+            border-bottom: 2px solid transparent;
+            transition: all var(--transition-normal);
+        }
+        
+        .preview-tab:hover {
+            color: var(--text-primary);
+        }
+        
+        .preview-tab.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+        
+        .preview-content {
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .tab-content {
+            display: none;
+            flex: 1;
+            overflow: auto;
+            padding: 1.5rem;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .code-editor {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            overflow: auto;
+            height: 100%;
+        }
+        
+        .code-line {
+            display: flex;
+        }
+        
+        .line-number {
+            width: 3rem;
+            text-align: right;
+            padding-right: 1rem;
+            user-select: none;
+            color: var(--text-secondary);
+            opacity: 0.5;
+        }
+        
+        .line-content {
+            flex: 1;
+        }
+        
+        .code-comment {
+            color: #6b7280;
+            font-style: italic;
+        }
+        
+        .code-key {
+            color: #93c5fd;
+        }
+        
+        .code-value {
+            color: #fbbf24;
+        }
+        
+        .code-string {
+            color: #a3be8c;
+        }
+        
+        .preview-form {
+            padding: 1.5rem;
+            overflow: auto;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background-color: var(--primary-bg);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            transition: all var(--transition-normal);
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+        
+        .form-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1em;
+        }
+        
+        .form-text {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+        
+        .form-check {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+        
+        .form-check-input {
+            margin-right: 0.75rem;
+            appearance: none;
+            width: 1.25rem;
+            height: 1.25rem;
+            background-color: var(--primary-bg);
+            border: 1px solid var(--border);
+            border-radius: 0.25rem;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            position: relative;
+        }
+        
+        .form-check-input:checked {
+            background-color: var(--accent);
+            border-color: var(--accent);
+        }
+        
+        .form-check-input:checked::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 0.85rem;
+        }
+        
+        .form-check-label {
+            font-size: 0.9rem;
+        }
+        
+        .terminal {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            padding: 1.5rem;
+            background-color: #1a1a1a;
+            color: #e2e8f0;
+            overflow: auto;
+            height: 100%;
+            white-space: pre-wrap;
+        }
+        
+        .terminal-line {
+            margin-bottom: 0.5rem;
+        }
+        
+        .terminal-success {
+            color: var(--success);
+        }
+        
+        .terminal-error {
+            color: var(--error);
+        }
+        
+        .terminal-warning {
+            color: var(--warning);
+        }
+        
+        .terminal-command {
+            color: var(--accent);
+            font-weight: 500;
+        }
+        
+        .preview-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+        
+        .preview-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        
+        .status-ready {
+            background-color: var(--info);
+        }
+        
+        .status-running {
+            background-color: var(--warning);
+            animation: pulse 1s infinite;
+        }
+        
+        .status-success {
+            background-color: var(--success);
+        }
+        
+        .status-error {
+            background-color: var(--error);
+        }
+        
+        .preview-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .vm-status {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            padding: 1.5rem;
+            display: none;
+        }
+        
+        .vm-status.active {
+            display: flex;
+        }
+        
+        .vm-card {
+            background-color: rgba(30, 41, 59, 0.5);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .vm-icon {
+            width: 3rem;
+            height: 3rem;
+            background-color: var(--secondary-bg);
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--accent);
+        }
+        
+        .vm-info {
+            flex: 1;
+        }
+        
+        .vm-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .vm-details {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        
+        .vm-progress {
+            flex: 1;
+            height: 4px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+        
+        .vm-progress-bar {
+            height: 100%;
+            background-color: var(--accent);
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+        
+        .vm-state {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .vm-state-provisioning {
+            background-color: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+        
+        .vm-state-running {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+        
+        .vm-state-stopping {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--error);
+        }
+        
+        .time-remaining {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+        
+        .time-progress {
+            width: 100%;
+            height: 4px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 0.75rem;
+        }
+        
+        .time-progress-bar {
+            height: 100%;
+            background-color: var(--accent);
+            border-radius: 2px;
+            transition: width 1s linear;
+        }
+        
+        /* Footer */
+        .sandbox-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        
+        .back-to-site {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--accent);
+            font-weight: 500;
+            transition: all var(--transition-normal);
+        }
+        
+        .back-to-site:hover {
+            color: var(--accent-darker);
+            transform: translateX(-3px);
+        }
+        
+        /* Animation */
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            .sandbox-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .playbook-list {
+                max-height: initial;
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .sandbox-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .sandbox-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+            
+            .preview-tabs {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sandbox-container">
+        <div class="container">
+            <div class="sandbox-header">
+                <div class="sandbox-title">
+                    <h1>Ansible Sandbox</h1>
+                </div>
+                
+                <div class="sandbox-actions">
+                    <button class="sandbox-btn">
+                        <i class="fas fa-question-circle"></i>
+                        <span>Help</span>
+                    </button>
+                    <button class="sandbox-btn">
+                        <i class="fas fa-book"></i>
+                        <span>Documentation</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="sandbox-grid">
+                <div class="playbook-list">
+                    <div class="playbook-card active" data-playbook="web-server">
+                        <div class="playbook-header">
+                            <h3 class="playbook-title">Web Server Deployment</h3>
+                            <span class="playbook-tag">Basic</span>
+                        </div>
+                        <p class="playbook-description">
+                            Deploy a Nginx web server with a sample website in a controlled environment.
+                        </p>
+                        <div class="playbook-details">
+                            <div class="playbook-detail">
+                                <i class="fas fa-clock"></i>
+                                <span>Runtime: ~3 min</span>
+                            </div>
+                            <div class="playbook-detail">
+                                <i class="fas fa-server"></i>
+                                <span>1 VM</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="playbook-card" data-playbook="docker-compose">
+                        <div class="playbook-header">
+                            <h3 class="playbook-title">Docker Compose Stack</h3>
+                            <span class="playbook-tag">Intermediate</span>
+                        </div>
+                        <p class="playbook-description">
+                            Deploy a multi-container application using Docker Compose with automatic configuration.
+                        </p>
+                        <div class="playbook-details">
+                            <div class="playbook-detail">
+                                <i class="fas fa-clock"></i>
+                                <span>Runtime: ~5 min</span>
+                            </div>
+                            <div class="playbook-detail">
+                                <i class="fas fa-server"></i>
+                                <span>1 VM</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="playbook-card" data-playbook="k3s-cluster">
+                        <div class="playbook-header">
+                            <h3 class="playbook-title">K3s Kubernetes Cluster</h3>
+                            <span class="playbook-tag">Advanced</span>
+                        </div>
+                        <p class="playbook-description">
+                            Deploy a lightweight Kubernetes cluster with basic services and sample application.
+                        </p>
+                        <div class="playbook-details">
+                            <div class="playbook-detail">
+                                <i class="fas fa-clock"></i>
+                                <span>Runtime: ~8 min</span>
+                            </div>
+                            <div class="playbook-detail">
+                                <i class="fas fa-server"></i>
+                                <span>3 VMs</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="playbook-card" data-playbook="lamp-stack">
+                        <div class="playbook-header">
+                            <h3 class="playbook-title">LAMP Stack</h3>
+                            <span class="playbook-tag">Intermediate</span>
+                        </div>
+                        <p class="playbook-description">
+                            Deploy a Linux, Apache, MySQL, and PHP stack with a sample application.
+                        </p>
+                        <div class="playbook-details">
+                            <div class="playbook-detail">
+                                <i class="fas fa-clock"></i>
+                                <span>Runtime: ~4 min</span>
+                            </div>
+                            <div class="playbook-detail">
+                                <i class="fas fa-server"></i>
+                                <span>1 VM</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="playbook-card" data-playbook="security-hardening">
+                        <div class="playbook-header">
+                            <h3 class="playbook-title">Security Hardening</h3>
+                            <span class="playbook-tag">Advanced</span>
+                        </div>
+                        <p class="playbook-description">
+                            Apply security best practices to a Linux server including firewall, SSH hardening, and more.
+                        </p>
+                        <div class="playbook-details">
+                            <div class="playbook-detail">
+                                <i class="fas fa-clock"></i>
+                                <span>Runtime: ~6 min</span>
+                            </div>
+                            <div class="playbook-detail">
+                                <i class="fas fa-server"></i>
+                                <span>1 VM</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="sandbox-preview">
+                    <div class="preview-container">
+                        <div class="preview-header">
+                            <div class="preview-title">
+                                <i class="fas fa-file-code"></i>
+                                <span>Web Server Deployment</span>
+                            </div>
+                            <div class="preview-tabs">
+                                <div class="preview-tab active" data-tab="code">Playbook</div>
+                                <div class="preview-tab" data-tab="config">Configuration</div>
+                                <div class="preview-tab" data-tab="output">Output</div>
+                                <div class="preview-tab" data-tab="status">VM Status</div>
+                            </div>
+                        </div>
+                        <div class="preview-content">
+                            <div class="tab-content active" id="code-tab">
+                                <div class="code-editor">
+                                    <div class="code-line">
+                                        <span class="line-number">1</span>
+                                        <span class="line-content code-comment">---</span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">2</span>
+                                        <span class="line-content code-comment"># Web Server Deployment Playbook</span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">3</span>
+                                        <span class="line-content code-comment"># This playbook installs and configures a basic Nginx web server</span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">4</span>
+                                        <span class="line-content"></span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">5</span>
+                                        <span class="line-content">- <span class="code-key">name</span>: <span class="code-string">Deploy Web Server</span></span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">6</span>
+                                        <span class="line-content">  <span class="code-key">hosts</span>: <span class="code-value">all</span></span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">7</span>
+                                        <span class="line-content">  <span class="code-key">become</span>: <span class="code-value">yes</span></span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">8</span>
+                                        <span class="line-content">  <span class="code-key">vars</span>:</span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">9</span>
+                                        <span class="line-content">    <span class="code-key">web_domain</span>: <span class="code-string">example.local</span></span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">10</span>
+                                        <span class="line-content">    <span class="code-key">web_root</span>: <span class="code-string">/var/www/html</span></span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">11</span>
+                                        <span class="line-content">    <span class="code-key">enable_https</span>: <span class
+                                        <span class="line-content">    <span class="code-key">enable_https</span>: <span class="code-value">false</span></span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">12</span>
+                                        <span class="line-content">    <span class="code-key">web_color</span>: <span class="code-string">blue</span></span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">13</span>
+                                        <span class="line-content"></span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">14</span>
+                                        <span class="line-content">  <span class="code-key">tasks</span>:</span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">15</span>
+                                        <span class="line-content">    - <span class="code-key">name</span>: <span class="code-string">Update apt cache</span></span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">16</span>
+                                        <span class="line-content">      <span class="code-key">apt</span>:</span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">17</span>
+                                        <span class="line-content">        <span class="code-key">update_cache</span>: <span class="code-value">yes</span></span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">18</span>
+                                        <span class="line-content">        <span class="code-key">cache_valid_time</span>: <span class="code-value">3600</span></span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">19</span>
+                                        <span class="line-content"></span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">20</span>
+                                        <span class="line-content">    - <span class="code-key">name</span>: <span class="code-string">Install Nginx and required packages</span></span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">21</span>
+                                        <span class="line-content">      <span class="code-key">apt</span>:</span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">22</span>
+                                        <span class="line-content">        <span class="code-key">name</span>:</span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">23</span>
+                                        <span class="line-content">          - <span class="code-string">nginx</span></span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">24</span>
+                                        <span class="line-content">          - <span class="code-string">curl</span></span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">25</span>
+                                        <span class="line-content">        <span class="code-key">state</span>: <span class="code-string">present</span></span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">26</span>
+                                        <span class="line-content"></span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">27</span>
+                                        <span class="line-content">    - <span class="code-key">name</span>: <span class="code-string">Create web root directory</span></span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">28</span>
+                                        <span class="line-content">      <span class="code-key">file</span>:</span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">29</span>
+                                        <span class="line-content">        <span class="code-key">path</span>: <span class="code-string">"{{ web_root }}"</span></span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">30</span>
+                                        <span class="line-content">        <span class="code-key">state</span>: <span class="code-string">directory</span></span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">31</span>
+                                        <span class="line-content">        <span class="code-key">mode</span>: <span class="code-string">'0755'</span></span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">32</span>
+                                        <span class="line-content"></span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">33</span>
+                                        <span class="line-content">    - <span class="code-key">name</span>: <span class="code-string">Create sample website</span></span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">34</span>
+                                        <span class="line-content">      <span class="code-key">template</span>:</span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">35</span>
+                                        <span class="line-content">        <span class="code-key">src</span>: <span class="code-string">templates/index.html.j2</span></span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">36</span>
+                                        <span class="line-content">        <span class="code-key">dest</span>: <span class="code-string">"{{ web_root }}/index.html"</span></span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">37</span>
+                                        <span class="line-content">        <span class="code-key">mode</span>: <span class="code-string">'0644'</span></span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">38</span>
+                                        <span class="line-content"></span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">39</span>
+                                        <span class="line-content">    - <span class="code-key">name</span>: <span class="code-string">Configure Nginx virtual host</span></span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">40</span>
+                                        <span class="line-content">      <span class="code-key">template</span>:</span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">41</span>
+                                        <span class="line-content">        <span class="code-key">src</span>: <span class="code-string">templates/nginx.conf.j2</span></span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">42</span>
+                                        <span class="line-content">        <span class="code-key">dest</span>: <span class="code-string">/etc/nginx/sites-available/{{ web_domain }}</span></span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">43</span>
+                                        <span class="line-content">      <span class="code-key">notify</span>: <span class="code-string">restart nginx</span></span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">44</span>
+                                        <span class="line-content"></span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">45</span>
+                                        <span class="line-content">    - <span class="code-key">name</span>: <span class="code-string">Enable Nginx virtual host</span></span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">46</span>
+                                        <span class="line-content">      <span class="code-key">file</span>:</span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">47</span>
+                                        <span class="line-content">        <span class="code-key">src</span>: <span class="code-string">/etc/nginx/sites-available/{{ web_domain }}</span></span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">48</span>
+                                        <span class="line-content">        <span class="code-key">dest</span>: <span class="code-string">/etc/nginx/sites-enabled/{{ web_domain }}</span></span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">49</span>
+                                        <span class="line-content">        <span class="code-key">state</span>: <span class="code-string">link</span></span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">50</span>
+                                        <span class="line-content">      <span class="code-key">notify</span>: <span class="code-string">restart nginx</span></span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">51</span>
+                                        <span class="line-content"></span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">52</span>
+                                        <span class="line-content">    - <span class="code-key">name</span>: <span class="code-string">Start Nginx</span></span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">53</span>
+                                        <span class="line-content">      <span class="code-key">service</span>:</span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">54</span>
+                                        <span class="line-content">        <span class="code-key">name</span>: <span class="code-string">nginx</span></span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">55</span>
+                                        <span class="line-content">        <span class="code-key">state</span>: <span class="code-string">started</span></span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">56</span>
+                                        <span class="line-content">        <span class="code-key">enabled</span>: <span class="code-value">yes</span></span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">57</span>
+                                        <span class="line-content"></span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">58</span>
+                                        <span class="line-content">  <span class="code-key">handlers</span>:</span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">59</span>
+                                        <span class="line-content">    - <span class="code-key">name</span>: <span class="code-string">restart nginx</span></span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">60</span>
+                                        <span class="line-content">      <span class="code-key">service</span>:</span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">61</span>
+                                        <span class="line-content">        <span class="code-key">name</span>: <span class="code-string">nginx</span></span>
+                                    </div>
+                                    <div class="code-line">
+                                        <span class="line-number">62</span>
+                                        <span class="line-content">        <span class="code-key">state</span>: <span class="code-string">restarted</span></span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="tab-content" id="config-tab">
+                                <div class="preview-form">
+                                    <div class="form-group">
+                                        <label class="form-label" for="web_domain">Web Domain</label>
+                                        <input type="text" id="web_domain" class="form-control" value="example.local">
+                                        <div class="form-text">Domain name for the Nginx virtual host.</div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label class="form-label" for="web_root">Web Root</label>
+                                        <input type="text" id="web_root" class="form-control" value="/var/www/html">
+                                        <div class="form-text">Directory path where website files will be stored.</div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label class="form-label">Enable HTTPS</label>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="enable_https">
+                                            <label class="form-check-label" for="enable_https">
+                                                Configure HTTPS with self-signed certificate
+                                            </label>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label class="form-label" for="web_color">Theme Color</label>
+                                        <select id="web_color" class="form-control form-select">
+                                            <option value="blue" selected>Blue</option>
+                                            <option value="green">Green</option>
+                                            <option value="red">Red</option>
+                                            <option value="purple">Purple</option>
+                                        </select>
+                                        <div class="form-text">Color theme for the sample website.</div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label class="form-label" for="vm_template">VM Template</label>
+                                        <select id="vm_template" class="form-control form-select">
+                                            <option value="ubuntu-22.04" selected>Ubuntu 22.04 LTS</option>
+                                            <option value="debian-11">Debian 11</option>
+                                            <option value="centos-stream-9">CentOS Stream 9</option>
+                                        </select>
+                                        <div class="form-text">Operating system for the virtual machine.</div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label class="form-label" for="vm_resources">VM Resources</label>
+                                        <select id="vm_resources" class="form-control form-select">
+                                            <option value="small" selected>Small (1 vCPU, 1GB RAM)</option>
+                                            <option value="medium">Medium (2 vCPU, 2GB RAM)</option>
+                                            <option value="large">Large (4 vCPU, 4GB RAM)</option>
+                                        </select>
+                                        <div class="form-text">Resource allocation for the virtual machine.</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="tab-content" id="output-tab">
+                                <div class="terminal">
+<span class="terminal-line">PLAY [Deploy Web Server] ***************************************************</span>
+<span class="terminal-line"></span>
+<span class="terminal-line">TASK [Gathering Facts] *****************************************************</span>
+<span class="terminal-line terminal-success">ok: [webserver]</span>
+<span class="terminal-line"></span>
+<span class="terminal-line">TASK [Update apt cache] ****************************************************</span>
+<span class="terminal-line terminal-success">ok: [webserver]</span>
+<span class="terminal-line"></span>
+<span class="terminal-line">TASK [Install Nginx and required packages] ********************************</span>
+<span class="terminal-line terminal-success">ok: [webserver]</span>
+<span class="terminal-line"></span>
+<span class="terminal-line">TASK [Create web root directory] *******************************************</span>
+<span class="terminal-line terminal-success">ok: [webserver]</span>
+<span class="terminal-line"></span>
+<span class="terminal-line">TASK [Create sample website] ***********************************************</span>
+<span class="terminal-line terminal-success">changed: [webserver]</span>
+<span class="terminal-line"></span>
+<span class="terminal-line">TASK [Configure Nginx virtual host] ****************************************</span>
+<span class="terminal-line terminal-success">changed: [webserver]</span>
+<span class="terminal-line"></span>
+<span class="terminal-line">TASK [Enable Nginx virtual host] *******************************************</span>
+<span class="terminal-line terminal-success">changed: [webserver]</span>
+<span class="terminal-line"></span>
+<span class="terminal-line">TASK [Start Nginx] *********************************************************</span>
+<span class="terminal-line terminal-success">ok: [webserver]</span>
+<span class="terminal-line"></span>
+<span class="terminal-line">RUNNING HANDLER [restart nginx] ********************************************</span>
+<span class="terminal-line terminal-success">changed: [webserver]</span>
+<span class="terminal-line"></span>
+<span class="terminal-line">PLAY RECAP *****************************************************************</span>
+<span class="terminal-line terminal-success">webserver                  : ok=9    changed=4    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0</span>
+<span class="terminal-line"></span>
+<span class="terminal-line">VERIFICATION **************************************************************</span>
+<span class="terminal-line">Testing website availability...</span>
+<span class="terminal-line terminal-success">Website is accessible at: http://192.168.122.10</span>
+<span class="terminal-line terminal-success">Website deployed successfully!</span>
+                                </div>
+                            </div>
+                            
+                            <div class="tab-content" id="status-tab">
+                                <div class="vm-status active">
+                                    <div class="vm-card">
+                                        <div class="vm-icon">
+                                            <i class="fas fa-server"></i>
+                                        </div>
+                                        <div class="vm-info">
+                                            <div class="vm-name">webserver (Ubuntu 22.04 LTS)</div>
+                                            <div class="vm-details">1 vCPU, 1GB RAM, 20GB Storage</div>
+                                            <div class="vm-progress">
+                                                <div class="vm-progress-bar" style="width: 100%;"></div>
+                                            </div>
+                                        </div>
+                                        <div class="vm-state vm-state-running">Running</div>
+                                    </div>
+                                    
+                                    <div class="time-remaining">
+                                        <div>Sandbox environment active for 15 more minutes</div>
+                                        <div class="time-progress">
+                                            <div class="time-progress-bar" style="width: 75%;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="preview-actions">
+                            <div class="preview-status">
+                                <div class="status-dot status-ready"></div>
+                                <span>Ready to deploy</span>
+                            </div>
+                            <div class="preview-buttons">
+                                <button class="sandbox-btn" id="reset-btn">
+                                    <i class="fas fa-undo"></i>
+                                    <span>Reset</span>
+                                </button>
+                                <button class="sandbox-btn btn-primary" id="deploy-btn">
+                                    <i class="fas fa-play"></i>
+                                    <span>Deploy</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="sandbox-footer">
+                <a href="index.html" class="back-to-site">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Back to Main Site</span>
+                </a>
+                <div class="footer-info">Sandbox environments automatically shut down after 30 minutes</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab switching
+            const tabs = document.querySelectorAll('.preview-tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(tc => tc.classList.remove('active'));
+                    
+                    this.classList.add('active');
+                    document.getElementById(`${tabId}-tab`).classList.add('active');
+                });
+            });
+            
+            // Playbook selection
+            const playbooks = document.querySelectorAll('.playbook-card');
+            const previewTitle = document.querySelector('.preview-title span');
+            
+            playbooks.forEach(playbook => {
+                playbook.addEventListener('click', function() {
+                    playbooks.forEach(p => p.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const playbookName = this.querySelector('.playbook-title').textContent;
+                    previewTitle.textContent = playbookName;
+                });
+            });
+            
+            // Deploy button
+            const deployBtn = document.getElementById('deploy-btn');
+            const resetBtn = document.getElementById('reset-btn');
+            const statusIndicator = document.querySelector('.preview-status');
+            
+            deployBtn.addEventListener('click', function() {
+                // Show the "running" tab
+                tabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(tc => tc.classList.remove('active'));
+                
+                document.querySelector('[data-tab="output"]').classList.add('active');
+                document.getElementById('output-tab').classList.add('active');
+                
+                // Update status to "running"
+                statusIndicator.innerHTML = '<div class="status-dot status-running"></div><span>Deploying...</span>';
+                
+                // Disable the deploy button while "running"
+                deployBtn.disabled = true;
+                deployBtn.style.opacity = "0.7";
+                deployBtn.style.cursor = "not-allowed";
+                
+                // Simulate a delay for deployment
+                setTimeout(function() {
+                    // Update status to "success"
+                    statusIndicator.innerHTML = '<div class="status-dot status-success"></div><span>Deployment successful</span>';
+                    
+                    // Re-enable the deploy button
+                    deployBtn.disabled = false;
+                    deployBtn.style.opacity = "1";
+                    deployBtn.style.cursor = "pointer";
+                    
+                    // Switch to the VM status tab
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(tc => tc.classList.remove('active'));
+                    
+                    document.querySelector('[data-tab="status"]').classList.add('active');
+                    document.getElementById('status-tab').classList.add('active');
+                    
+                    // Start the countdown timer simulation
+                    let timeLeft = 15; // minutes
+                    const timeRemainingDiv = document.querySelector('.time-remaining div');
+                    const timeProgressBar = document.querySelector('.time-progress-bar');
+                    
+                    const countdownInterval = setInterval(function() {
+                        timeLeft -= 1;
+                        const width = (timeLeft / 15) * 100;
+                        
+                        if (timeLeft <= 0) {
+                            clearInterval(countdownInterval);
+                            timeRemainingDiv.textContent = "Sandbox environment expired";
+                            timeProgressBar.style.width = "0%";
+                            
+                            // Reset status
+                            statusIndicator.innerHTML = '<div class="status-dot status-ready"></div><span>Ready to deploy</span>';
+                        } else {
+                            timeRemainingDiv.textContent = `Sandbox environment active for ${timeLeft} more minutes`;
+                            timeProgressBar.style.width = `${width}%`;
+                        }
+                    }, 60000); // Update every minute (in real implementation)
+                    
+                    // For demo purposes, we'll just set the initial values
+                    timeRemainingDiv.textContent = "Sandbox environment active for 15 more minutes";
+                    timeProgressBar.style.width = "100%";
+                }, 3000); // Simulate 3 second deployment
+            });
+            
+            // Reset button
+            resetBtn.addEventListener('click', function() {
+                // Reset status
+                statusIndicator.innerHTML = '<div class="status-dot status-ready"></div><span>Ready to deploy</span>';
+                
+                // Switch back to code tab
+                tabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(tc => tc.classList.remove('active'));
+                
+                document.querySelector('[data-tab="code"]').classList.add('active');
+                document.getElementById('code-tab').classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

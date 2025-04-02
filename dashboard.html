@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Argobox | Live Dashboard</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Live monitoring dashboard for Argobox infrastructure lab. View real-time metrics, system status, and infrastructure performance.">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22256%22 height=%22256%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%230f172a%22></rect><path fill=%22%233b82f6%22 d=%22M30 40L50 20L70 40L50 60L30 40Z%22></path><path fill=%22%233b82f6%22 d=%22M50 60L70 40L70 70L50 90L30 70L30 40L50 60Z%22 fill-opacity=%220.6%22></path></svg>">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <style>
+        :root {
+            /* Main Colors */
+            --primary-bg: #0f172a;
+            --secondary-bg: #1e293b;
+            --accent: #3b82f6;
+            --accent-darker: #2563eb;
+            --accent-gradient: linear-gradient(135deg, #2563eb, #3b82f6);
+            --accent-glow: 0 0 15px rgba(59, 130, 246, 0.5);
+            
+            /* Text Colors */
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --text-accent: #3b82f6;
+            
+            /* Status Colors */
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --info: #0ea5e9;
+            
+            /* UI Elements */
+            --border: rgba(71, 85, 105, 0.5);
+            --card-bg: rgba(30, 41, 59, 0.8);
+            --card-hover-bg: rgba(30, 41, 59, 0.95);
+            --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            --glass-effect: saturate(180%) blur(10px);
+            
+            /* Animation Timing */
+            --transition-fast: 0.2s ease;
+            --transition-normal: 0.3s ease;
+            --transition-slow: 0.5s ease;
+        }
+        
+        /* Reset & Base Styles */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--primary-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 20% 35%, rgba(29, 78, 216, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 75% 60%, rgba(14, 165, 233, 0.1) 0%, transparent 50%);
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+        
+        /* Dashboard Specific Styles */
+        .dashboard-container {
+            padding: 5rem 0 2rem;
+        }
+        
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .dashboard-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .dashboard-title h1 {
+            font-size: 1.75rem;
+            font-weight: 600;
+        }
+        
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+            padding: 0.5rem 1rem;
+            background-color: rgba(16, 185, 129, 0.1);
+            border-radius: 9999px;
+            color: var(--success);
+            font-weight: 500;
+        }
+        
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--success);
+            border-radius: 50%;
+            margin-right: 0.5rem;
+            position: relative;
+        }
+        
+        .live-dot::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background-color: var(--success);
+            animation: pulse 2s infinite;
+            z-index: -1;
+        }
+        
+        .dashboard-actions {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .dashboard-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+        }
+        
+        .dashboard-btn:hover {
+            background-color: var(--card-hover-bg);
+            border-color: var(--accent);
+        }
+        
+        .dashboard-btn i {
+            color: var(--accent);
+        }
+        
+        .dashboard-overview {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .overview-card {
+            background-color: var(--card-bg);
+            border-radius: 1rem;
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            transition: all var(--transition-normal);
+        }
+        
+        .overview-card:hover {
+            border-color: var(--accent);
+            box-shadow: var(--card-shadow);
+        }
+        
+        .overview-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .overview-card-title {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+        
+        .overview-card-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.5rem;
+            background-color: rgba(59, 130, 246, 0.1);
+            color: var(--accent);
+            font-size: 1.25rem;
+        }
+        
+        .overview-card-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .overview-card-secondary {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .status-up {
+            color: var(--success);
+        }
+        
+        .status-warning {
+            color: var(--warning);
+        }
+        
+        .status-down {
+            color: var(--error);
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .chart-container {
+            background-color: var(--card-bg);
+            border-radius: 1rem;
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            transition: all var(--transition-normal);
+            height: 350px;
+            position: relative;
+        }
+        
+        .chart-container:hover {
+            border-color: var(--accent);
+            box-shadow: var(--card-shadow);
+        }
+        
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .chart-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        .chart-period {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .chart-period-btn {
+            font-size: 0.85rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.5rem;
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all var(--transition-normal);
+        }
+        
+        .chart-period-btn.active {
+            background-color: rgba(59, 130, 246, 0.2);
+            color: var(--accent);
+        }
+        
+        .chart-period-btn:hover:not(.active) {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .chart-content {
+            height: calc(100% - 3rem);
+            position: relative;
+        }
+        
+        /* Performance Chart */
+        .chart-axes {
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: 40px 1fr;
+            grid-template-rows: 1fr 30px;
+            gap: 0;
+        }
+        
+        .chart-y-axis {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+        }
+        
+        .chart-y-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-align: right;
+            padding-right: 0.5rem;
+        }
+        
+        .chart-x-axis {
+            grid-column: 2;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 0.5rem;
+        }
+        
+        .chart-x-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+        
+        .chart-grid {
+            grid-column: 2;
+            grid-row: 1;
+            position: relative;
+            border-left: 1px dashed rgba(71, 85, 105, 0.3);
+            border-bottom: 1px dashed rgba(71, 85, 105, 0.3);
+        }
+        
+        .grid-line {
+            position: absolute;
+            width: 100%;
+            height: 1px;
+            background-color: rgba(71, 85, 105, 0.1);
+        }
+        
+        .grid-line:nth-child(1) { top: 20%; }
+        .grid-line:nth-child(2) { top: 40%; }
+        .grid-line:nth-child(3) { top: 60%; }
+        .grid-line:nth-child(4) { top: 80%; }
+        
+        .chart-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 0.5rem;
+        }
+        
+        .chart-line svg {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .line-path {
+            fill: none;
+            stroke: url(#line-gradient);
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+        
+        .line-area {
+            fill: url(#area-gradient);
+            opacity: 0.3;
+        }
+        
+        .data-point {
+            fill: var(--accent);
+            stroke: var(--primary-bg);
+            stroke-width: 2;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+        }
+        
+        .data-point:hover {
+            r: 5;
+            stroke-width: 2.5;
+            filter: drop-shadow(0 0 6px rgba(59, 130, 246, 0.7));
+        }
+        
+        .tooltip {
+            position: absolute;
+            padding: 0.75rem;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            font-size: 0.85rem;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+            z-index: 10;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .tooltip.active {
+            opacity: 1;
+        }
+        
+        .tooltip-label {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+        
+        .tooltip-value {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .tooltip-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--accent);
+        }
+        
+        /* Service Status */
+        .services-container {
+            background-color: var(--card-bg);
+            border-radius: 1rem;
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            height: 350px;
+            transition: all var(--transition-normal);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .services-container:hover {
+            border-color: var(--accent);
+            box-shadow: var(--card-shadow);
+        }
+        
+        .services-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .services-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        .services-refresh {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .services-list {
+            flex: 1;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--border) transparent;
+        }
+        
+        .services-list::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .services-list::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        .services-list::-webkit-scrollbar-thumb {
+            background-color: var(--border);
+            border-radius: 3px;
+        }
+        
+        .service-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(71, 85, 105, 0.2);
+        }
+        
+        .service-item:last-child {
+            border-bottom: none;
+        }
+        
+        .service-name {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .service-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 0.25rem;
+            background-color: rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            color: var(--accent);
+        }
+        
+        .service-details {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .service-label {
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+        
+        .service-description {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+        
+        .service-status {
+            display: flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .status-healthy {
+            color: var(--success);
+            background-color: rgba(16, 185, 129, 0.1);
+        }
+        
+        .status-issue {
+            color: var(--warning);
+            background-color: rgba(245, 158, 11, 0.1);
+        }
+        
+        .status-error {
+            color: var(--error);
+            background-color: rgba(239, 68, 68, 0.1);
+        }
+        
+        /* Logs & Activity */
+        .logs-container {
+            background-color: var(--card-bg);
+            border-radius: 1rem;
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            transition: all var(--transition-normal);
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .logs-container:hover {
+            border-color: var(--accent);
+            box-shadow: var(--card-shadow);
+        }
+        
+        .logs-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .logs-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        .logs-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+        
+        .logs-filter {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+        }
+        
+        .logs-filter:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .logs-content {
+            flex: 1;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            overflow-y: auto;
+            background-color: var(--primary-bg);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            white-space: pre-wrap;
+            line-height: 1.5;
+            color: var(--text-secondary);
+        }
+        
+        .log-entry {
+            margin-bottom: 0.5rem;
+            display: flex;
+        }
+        
+        .log-time {
+            color: #64748b;
+            margin-right: 0.75rem;
+            user-select: none;
+        }
+        
+        .log-level {
+            margin-right: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .log-level-info {
+            color: var(--info);
+        }
+        
+        .log-level-success {
+            color: var(--success);
+        }
+        
+        .log-level-warning {
+            color: var(--warning);
+        }
+        
+        .log-level-error {
+            color: var(--error);
+        }
+        
+        .log-message {
+            flex: 1;
+        }
+        
+        .log-highlight {
+            color: #a5d6ff;
+            font-weight: 500;
+        }
+        
+        /* Footer */
+        .dashboard-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        
+        .back-to-site {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--accent);
+            font-weight: 500;
+            transition: all var(--transition-normal);
+        }
+        
+        .back-to-site:hover {
+            color: var(--accent-darker);
+            transform: translateX(-3px);
+        }
+        
+        /* Animation */
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+            70% {
+                transform: scale(2);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 0;
+            }
+        }
+        
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .dashboard-overview {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .chart-container, .services-container {
+                height: 300px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .dashboard-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .dashboard-overview {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="container">
+            <div class="dashboard-header">
+                <div class="dashboard-title">
+                    <h1>Infrastructure Dashboard</h1>
+                    <div class="live-indicator">
+                        <span class="live-dot"></span>
+                        <span>Live</span>
+                    </div>
+                </div>
+                
+                <div class="dashboard-actions">
+                    <button class="dashboard-btn">
+                        <i class="fas fa-sync-alt"></i>
+                        <span>Refresh</span>
+                    </button>
+                    <button class="dashboard-btn">
+                        <i class="fas fa-bell"></i>
+                        <span>Alerts</span>
+                    </button>
+                    <button class="dashboard-btn">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="dashboard-overview">
+                <div class="overview-card">
+                    <div class="overview-card-header">
+                        <h3 class="overview-card-title">CPU Utilization</h3>
+                        <div class="overview-card-icon">
+                            <i class="fas fa-microchip"></i>
+                        </div>
+                    </div>
+                    <div class="overview-card-value">42%</div>
+                    <div class="overview-card-secondary">
+                        <i class="fas fa-arrow-down status-up"></i>
+                        <span>3% lower than average</span>
+                    </div>
+                </div>
+                
+                <div class="overview-card">
+                    <div class="overview-card-header">
+                        <h3 class="overview-card-title">Memory Usage</h3>
+                        <div class="overview-card-icon">
+                            <i class="fas fa-memory"></i>
+                        </div>
+                    </div>
+                    <div class="overview-card-value">57%</div>
+                    <div class="overview-card-secondary">
+                        <i class="fas fa-arrow-up status-warning"></i>
+                        <span>5% higher than yesterday</span>
+                    </div>
+                </div>
+                
+                <div class="overview-card">
+                    <div class="overview-card-header">
+                        <h3 class="overview-card-title">Storage</h3>
+                        <div class="overview-card-icon">
+                            <i class="fas fa-hdd"></i>
+                        </div>
+                    </div>
+                    <div class="overview-card-value">64%</div>
+                    <div class="overview-card-secondary">
+                        <i class="fas fa-arrow-up status-warning"></i>
+                        <span>12 GB added today</span>
+                    </div>
+                </div>
+                
+                <div class="overview-card">
+                    <div class="overview-card-header">
+                        <h3 class="overview-card-title">Network</h3>
+                        <div class="overview-card-icon">
+                            <i class="fas fa-network-wired"></i>
+                        </div>
+                    </div>
+                    <div class="overview-card-value">28%</div>
+                    <div class="overview-card-secondary">
+                        <i class="fas fa-arrow-down status-up"></i>
+                        <span>3.2 Mbps current</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="dashboard-grid">
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3 class="chart-title">System Performance</h3>
+                        <div class="chart-period">
+                            <div class="chart-period-btn">1H</div>
+                            <div class="chart-period-btn active">24H</div>
+                            <div class="chart-period-btn">7D</div>
+                            <div class="chart-period-btn">30D</div>
+                        </div>
+                    </div>
+                    <div class="chart-content">
+                        <div class="chart-axes">
+                            <div class="chart-y-axis">
+                                <div class="chart-y-label">100%</div>
+                                <div class="chart-y-label">75%</div>
+                                <div class="chart-y-label">50%</div>
+                                <div class="chart-y-label">25%</div>
+                                <div class="chart-y-label">0%</div>
+                            </div>
+                            <div class="chart-x-axis">
+                                <div class="chart-x-label">00:00</div>
+                                <div class="chart-x-label">06:00</div>
+                                <div class="chart-x-label">12:00</div>
+                                <div class="chart-x-label">18:00</div>
+                                <div class="chart-x-label">Now</div>
+                            </div>
+                            <div class="chart-grid">
+                                <div class="grid-line"></div>
+                                <div class="grid-line"></div>
+                                <div class="grid-line"></div>
+                                <div class="grid-line"></div>
+                                <div class="chart-line">
+                                    <svg viewBox="0 0 1000 500" preserveAspectRatio="none">
+                                        <defs>
+                                            <linearGradient id="line-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                                <stop offset="0%" stop-color="#3b82f6" />
+                                                <stop offset="100%" stop-color="#0ea5e9" />
+                                            </linearGradient>
+                                            <linearGradient id="area-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                                <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.5" />
+                                                <stop offset="100%" stop-color="#3b82f6" stop-opacity="0" />
+                                            </linearGradient>
+                                        </defs>
+                                        
+                                        <!-- CPU Line -->
+                                        <path class="line-path" d="M0,350 C50,330 100,320 150,310 S250,290 300,250 S400,200 450,230 S550,280 600,240 S700,140 750,160 S850,190 900,150 S950,140 1000,120"></path>
+                                        
+                                        <!-- Area under the line -->
+                                        <path class="line-area" d="M0,350 C50,330 100,320 150,310 S250,290 300,250 S400,200 450,230 S550,280 600,240 S700,140 750,160 S850,190 900,150 S950,140 1000,120 V500 H0 Z"></path>
+                                        
+                                        <!-- Data points -->
+                                        <circle class="data-point" cx="0" cy="350" r="4" data-value="30%" data-time="00:00" />
+                                        <circle class="data-point" cx="150" cy="310" r="4" data-value="38%" data-time="03:45" />
+                                        <circle class="data-point" cx="300" cy="250" r="4" data-value="50%" data-time="07:30" />
+                                        <circle class="data-point" cx="450" cy="230" r="4" data-value
+                                        <circle class="data-point" cx="450" cy="230" r="4" data-value="54%" data-time="11:15" />
+                                        <circle class="data-point" cx="600" cy="240" r="4" data-value="52%" data-time="15:00" />
+                                        <circle class="data-point" cx="750" cy="160" r="4" data-value="68%" data-time="18:45" />
+                                        <circle class="data-point" cx="900" cy="150" r="4" data-value="70%" data-time="22:30" />
+                                        <circle class="data-point" cx="1000" cy="120" r="4" data-value="76%" data-time="Now" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tooltip" id="chart-tooltip">
+                            <div class="tooltip-label">CPU Usage</div>
+                            <div class="tooltip-value">
+                                <span class="tooltip-dot"></span>
+                                <span>76% at 14:30</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="services-container">
+                    <div class="services-header">
+                        <h3 class="services-title">Services Status</h3>
+                        <div class="services-refresh">
+                            <i class="fas fa-sync-alt"></i>
+                            <span>Last updated: 2 min ago</span>
+                        </div>
+                    </div>
+                    <div class="services-list">
+                        <div class="service-item">
+                            <div class="service-name">
+                                <div class="service-icon">
+                                    <i class="fab fa-git-alt"></i>
+                                </div>
+                                <div class="service-details">
+                                    <div class="service-label">Gitea</div>
+                                    <div class="service-description">Code Repository</div>
+                                </div>
+                            </div>
+                            <div class="service-status status-healthy">Operational</div>
+                        </div>
+                        
+                        <div class="service-item">
+                            <div class="service-name">
+                                <div class="service-icon">
+                                    <i class="fas fa-code"></i>
+                                </div>
+                                <div class="service-details">
+                                    <div class="service-label">VSCode Server</div>
+                                    <div class="service-description">Development Environment</div>
+                                </div>
+                            </div>
+                            <div class="service-status status-healthy">Operational</div>
+                        </div>
+                        
+                        <div class="service-item">
+                            <div class="service-name">
+                                <div class="service-icon">
+                                    <i class="fas fa-download"></i>
+                                </div>
+                                <div class="service-details">
+                                    <div class="service-label">rTorrent</div>
+                                    <div class="service-description">Download Client</div>
+                                </div>
+                            </div>
+                            <div class="service-status status-issue">Performance Issues</div>
+                        </div>
+                        
+                        <div class="service-item">
+                            <div class="service-name">
+                                <div class="service-icon">
+                                    <i class="fas fa-database"></i>
+                                </div>
+                                <div class="service-details">
+                                    <div class="service-label">NAS</div>
+                                    <div class="service-description">Network Storage</div>
+                                </div>
+                            </div>
+                            <div class="service-status status-healthy">Operational</div>
+                        </div>
+                        
+                        <div class="service-item">
+                            <div class="service-name">
+                                <div class="service-icon">
+                                    <i class="fas fa-network-wired"></i>
+                                </div>
+                                <div class="service-details">
+                                    <div class="service-label">Traefik</div>
+                                    <div class="service-description">Reverse Proxy</div>
+                                </div>
+                            </div>
+                            <div class="service-status status-healthy">Operational</div>
+                        </div>
+                        
+                        <div class="service-item">
+                            <div class="service-name">
+                                <div class="service-icon">
+                                    <i class="fas fa-dharmachakra"></i>
+                                </div>
+                                <div class="service-details">
+                                    <div class="service-label">K3s</div>
+                                    <div class="service-description">Kubernetes Cluster</div>
+                                </div>
+                            </div>
+                            <div class="service-status status-healthy">Operational</div>
+                        </div>
+                        
+                        <div class="service-item">
+                            <div class="service-name">
+                                <div class="service-icon">
+                                    <i class="fas fa-shield-alt"></i>
+                                </div>
+                                <div class="service-details">
+                                    <div class="service-label">Cloudflared</div>
+                                    <div class="service-description">Zero Trust Tunnel</div>
+                                </div>
+                            </div>
+                            <div class="service-status status-healthy">Operational</div>
+                        </div>
+                        
+                        <div class="service-item">
+                            <div class="service-name">
+                                <div class="service-icon">
+                                    <i class="fas fa-folder"></i>
+                                </div>
+                                <div class="service-details">
+                                    <div class="service-label">FileBrowser</div>
+                                    <div class="service-description">File Management</div>
+                                </div>
+                            </div>
+                            <div class="service-status status-healthy">Operational</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="logs-container">
+                <div class="logs-header">
+                    <h3 class="logs-title">System Logs</h3>
+                    <div class="logs-actions">
+                        <div class="logs-filter">
+                            <i class="fas fa-filter"></i>
+                            <span>Filter: All</span>
+                        </div>
+                        <div class="logs-filter">
+                            <i class="fas fa-clock"></i>
+                            <span>Last 24 hours</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="logs-content">
+                    <div class="log-entry">
+                        <span class="log-time">14:32:05</span>
+                        <span class="log-level log-level-info">INFO</span>
+                        <span class="log-message">System status check complete. All services operational.</span>
+                    </div>
+                    <div class="log-entry">
+                        <span class="log-time">14:30:22</span>
+                        <span class="log-level log-level-success">SUCCESS</span>
+                        <span class="log-message">Daily backup completed successfully. Size: <span class="log-highlight">1.24GB</span></span>
+                    </div>
+                    <div class="log-entry">
+                        <span class="log-time">14:15:37</span>
+                        <span class="log-level log-level-warning">WARNING</span>
+                        <span class="log-message">rTorrent showing high CPU usage (82%). Investigating cause.</span>
+                    </div>
+                    <div class="log-entry">
+                        <span class="log-time">13:42:18</span>
+                        <span class="log-level log-level-info">INFO</span>
+                        <span class="log-message">User <span class="log-highlight">admin</span> logged in from <span class="log-highlight">192.168.1.105</span></span>
+                    </div>
+                    <div class="log-entry">
+                        <span class="log-time">12:05:53</span>
+                        <span class="log-level log-level-info">INFO</span>
+                        <span class="log-message">Kubernetes pod <span class="log-highlight">traefik-78df9c5f8d-t85xc</span> restarted</span>
+                    </div>
+                    <div class="log-entry">
+                        <span class="log-time">11:30:14</span>
+                        <span class="log-level log-level-info">INFO</span>
+                        <span class="log-message">Docker image <span class="log-highlight">gitea/gitea:latest</span> pulled successfully</span>
+                    </div>
+                    <div class="log-entry">
+                        <span class="log-time">10:22:47</span>
+                        <span class="log-level log-level-error">ERROR</span>
+                        <span class="log-message">Failed to connect to NAS share. Retrying in 30 seconds.</span>
+                    </div>
+                    <div class="log-entry">
+                        <span class="log-time">10:23:17</span>
+                        <span class="log-level log-level-success">SUCCESS</span>
+                        <span class="log-message">NAS share connection restored.</span>
+                    </div>
+                    <div class="log-entry">
+                        <span class="log-time">09:45:32</span>
+                        <span class="log-level log-level-info">INFO</span>
+                        <span class="log-message">Scheduled system update check started</span>
+                    </div>
+                    <div class="log-entry">
+                        <span class="log-time">09:46:05</span>
+                        <span class="log-level log-level-info">INFO</span>
+                        <span class="log-message">System is up to date. No updates available.</span>
+                    </div>
+                    <div class="log-entry">
+                        <span class="log-time">08:30:00</span>
+                        <span class="log-level log-level-info">INFO</span>
+                        <span class="log-message">Daily health check initiated</span>
+                    </div>
+                    <div class="log-entry">
+                        <span class="log-time">08:30:14</span>
+                        <span class="log-level log-level-success">SUCCESS</span>
+                        <span class="log-message">All services responding normally</span>
+                    </div>
+                    <div class="log-entry">
+                        <span class="log-time">07:15:22</span>
+                        <span class="log-level log-level-info">INFO</span>
+                        <span class="log-message">Daily metrics collection completed</span>
+                    </div>
+                    <div class="log-entry">
+                        <span class="log-time">06:00:00</span>
+                        <span class="log-level log-level-info">INFO</span>
+                        <span class="log-message">Scheduled maintenance window started</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="dashboard-footer">
+                <a href="index.html" class="back-to-site">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Back to Main Site</span>
+                </a>
+                <div class="footer-info">Updated every 60 seconds • Last refresh: <span id="last-refresh">Just now</span></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Initialize dashboard functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set up data point hover tooltips
+            const dataPoints = document.querySelectorAll('.data-point');
+            const tooltip = document.getElementById('chart-tooltip');
+            
+            dataPoints.forEach(point => {
+                point.addEventListener('mouseenter', function(e) {
+                    const value = this.getAttribute('data-value');
+                    const time = this.getAttribute('data-time');
+                    
+                    const tooltipLabel = tooltip.querySelector('.tooltip-label');
+                    const tooltipValue = tooltip.querySelector('.tooltip-value span:last-child');
+                    
+                    tooltipLabel.textContent = 'CPU Usage';
+                    tooltipValue.textContent = `${value} at ${time}`;
+                    
+                    // Position tooltip
+                    const rect = this.getBoundingClientRect();
+                    const chartRect = document.querySelector('.chart-grid').getBoundingClientRect();
+                    
+                    tooltip.style.left = `${rect.left - chartRect.left - tooltip.offsetWidth / 2 + rect.width / 2}px`;
+                    tooltip.style.top = `${rect.top - chartRect.top - tooltip.offsetHeight - 10}px`;
+                    
+                    tooltip.classList.add('active');
+                });
+                
+                point.addEventListener('mouseleave', function() {
+                    tooltip.classList.remove('active');
+                });
+            });
+            
+            // Period buttons
+            const periodBtns = document.querySelectorAll('.chart-period-btn');
+            
+            periodBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    periodBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // In a real implementation, this would trigger data reload
+                    console.log(`Changing period to ${this.textContent}`);
+                });
+            });
+            
+            // Refresh button functionality
+            const refreshBtn = document.querySelector('.dashboard-btn');
+            
+            refreshBtn.addEventListener('click', function() {
+                simulateRefresh();
+            });
+            
+            // Set up simulation of real-time data
+            function simulateRefresh() {
+                // Update metrics with random variations
+                updateOverviewCard('CPU Utilization', 30, 70);
+                updateOverviewCard('Memory Usage', 40, 75);
+                updateOverviewCard('Storage', 60, 70);
+                updateOverviewCard('Network', 15, 40);
+                
+                // Update last refresh time
+                document.getElementById('last-refresh').textContent = 'Just now';
+                
+                // Add a new log entry
+                addLogEntry();
+            }
+            
+            function updateOverviewCard(title, min, max) {
+                const cards = document.querySelectorAll('.overview-card');
+                
+                for (const card of cards) {
+                    const cardTitle = card.querySelector('.overview-card-title').textContent;
+                    
+                    if (cardTitle === title) {
+                        const valueEl = card.querySelector('.overview-card-value');
+                        const oldValue = parseInt(valueEl.textContent);
+                        const newValue = Math.floor(Math.random() * (max - min + 1)) + min;
+                        
+                        valueEl.textContent = `${newValue}%`;
+                        
+                        const secondaryEl = card.querySelector('.overview-card-secondary');
+                        const arrowEl = secondaryEl.querySelector('i');
+                        const textEl = secondaryEl.querySelector('span');
+                        
+                        const diff = newValue - oldValue;
+                        
+                        if (diff > 0) {
+                            arrowEl.className = 'fas fa-arrow-up';
+                            arrowEl.classList.add(newValue > 65 ? 'status-warning' : 'status-up');
+                            textEl.textContent = `${Math.abs(diff)}% higher than before`;
+                        } else {
+                            arrowEl.className = 'fas fa-arrow-down';
+                            arrowEl.classList.add('status-up');
+                            textEl.textContent = `${Math.abs(diff)}% lower than before`;
+                        }
+                        
+                        break;
+                    }
+                }
+            }
+            
+            function addLogEntry() {
+                const logsContent = document.querySelector('.logs-content');
+                const now = new Date();
+                const timeString = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+                
+                const logTypes = ['info', 'success', 'warning', 'error'];
+                const logType = logTypes[Math.floor(Math.random() * logTypes.length)];
+                
+                const logMessages = [
+                    'System health check completed',
+                    'Container restarted automatically',
+                    'Network traffic spike detected',
+                    'Backup process initiated',
+                    'Disk space cleanup completed',
+                    'User session timeout',
+                    'API rate limit approaching',
+                    'Security scan completed'
+                ];
+                
+                const logMessage = logMessages[Math.floor(Math.random() * logMessages.length)];
+                
+                const logEntry = document.createElement('div');
+                logEntry.className = 'log-entry';
+                logEntry.innerHTML = `
+                    <span class="log-time">${timeString}</span>
+                    <span class="log-level log-level-${logType}">${logType.toUpperCase()}</span>
+                    <span class="log-message">${logMessage}</span>
+                `;
+                
+                logsContent.insertBefore(logEntry, logsContent.firstChild);
+            }
+            
+            // Auto refresh every 60 seconds
+            setInterval(function() {
+                simulateRefresh();
+            }, 60000);
+            
+            // Initialize refresh
+            simulateRefresh();
+        });
+    </script>
+</body>
+</html>
